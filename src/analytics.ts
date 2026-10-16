@@ -43,20 +43,13 @@ export function trackCommand(name: string) {
 
 let cached: Promise<string | null> | null = null;
 
-/**
- * Total visits to the site, formatted ("1,234"). Needs "Allow adding visitor
- * counts on your website" switched on in GoatCounter's settings.
- */
+
 export function totalVisits(): Promise<string | null> {
   if (!analyticsEnabled()) return Promise.resolve(null);
   if (demo()) return Promise.resolve("1,284");
   cached ??= fetch(`${base()}/counter/TOTAL.json`)
     .then((r) => (r.ok ? r.json() : null))
-    // A brand-new counter reads "0"; show nothing until there's a real visit.
-    .then((d: { count?: string } | null) => {
-      const n = d?.count ? String(d.count).trim() : "";
-      return n && n !== "0" ? n : null;
-    })
+    .then((d: { count?: string } | null) => (d?.count !== undefined ? String(d.count).trim() : null))
     .catch(() => null);
   return cached;
 }

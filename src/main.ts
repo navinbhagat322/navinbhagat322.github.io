@@ -91,7 +91,7 @@ async function startShell() {
   if (analyticsEnabled()) {
     startAnalytics();
     void totalVisits().then((n) => {
-      if (!n) return;
+      if (!n || n === "0") return;
       visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, " visits"));
       visitsSlot.hidden = false;
     });

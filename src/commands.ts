@@ -109,6 +109,10 @@ export const commands: Command[] = [
         out(h("span", { class: "muted" }, "Couldn't load the visit count right now."));
         return;
       }
+      if (total === "0") {
+        out(h("span", { class: "muted" }, "No visits counted yet — the counter starts once the site is live (local visits don't count)."));
+        return;
+      }
       add(
         h(
           "div",
