@@ -4,6 +4,7 @@ import { experience, focusAreas, links, profile, recruiter, skills, type Project
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
 import { lastShipped } from "./activity";
+import { systemDiagram } from "./system";
 import { vinkSVG } from "./vink";
 
 export function vinkAvatar(): HTMLElement {
@@ -245,14 +246,14 @@ export function welcome(): HTMLElement {
       { class: "hero-hurry" },
       cmd("tldr", h("span", {}, "⚡ In a hurry? Read the 30-second summary"), "hurry-btn"),
     ),
-    focusRow(),
+    systemDiagram(),
     h(
       "div",
-      { class: "hero-now" },
-      h("span", { class: "pulse", "aria-hidden": "true" }),
-      h("span", { class: "muted" }, "shipping daily at"),
-      h("span", {}, `${profile.company} · ${profile.project}`),
-      h("button", { type: "button", class: "hero-last", "data-activity": "last", "data-run": "activity", hidden: true }),
+      { class: "hero-proof" },
+      h("span", { class: "proof-item" }, h("span", { class: "pulse small", "aria-hidden": "true" }), `building ${profile.project} at ${profile.company}`),
+      cmd("projects ternodbi", h("span", {}, h("strong", {}, "280+"), " commits to TernoDBI"), "proof-item proof-link"),
+      h("span", { class: "proof-item" }, "published on PyPI"),
+      h("button", { type: "button", class: "proof-item proof-link hero-last", "data-activity": "last", "data-run": "activity", hidden: true }),
     ),
     h(
       "div",
