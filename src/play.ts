@@ -6,7 +6,7 @@ import { projects } from "./content";
 import { EXPLORE_COMMANDS, Game, levels, quests, type Quest } from "./game";
 import type { Command, Shell } from "./shell";
 import { onThemeChange } from "./theme";
-import { cmd, h, type Child } from "./ui";
+import { cmd, h, icon, type Child } from "./ui";
 import { Vink, vinkSVG, type Pose } from "./vink";
 
 const HINTS: Record<string, () => Child[]> = {
@@ -81,7 +81,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     const el = h(
       "div",
       { class: "toast", role: "status" },
-      h("span", { class: "toast-icon", "aria-hidden": "true" }, t.icon),
+      h("span", { class: "toast-icon", "aria-hidden": "true" }, icon(t.icon, 14)),
       h("span", { class: "toast-label" }, t.label),
       h("span", { class: "toast-xp" }, `+${t.xp} xp`),
     );
@@ -128,7 +128,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     toastQueue.push(
       batch.length === 1
         ? { icon: batch[0].icon, label: batch[0].title, xp: gained }
-        : { icon: "🏆", label: `${batch.length} quests`, xp: gained },
+        : { icon: "trophy", label: `${batch.length} quests`, xp: gained },
     );
     showNextToast();
   }
@@ -147,7 +147,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   vink.onPoke = () => game.step("poke");
   vink.onDrag = () => {
     game.unlock("lift");
-    if (game.firstTime("vink:dropped")) window.setTimeout(() => void vink.say("Thanks for the lift. Mind the edge next time 😅", 3200), 300);
+    if (game.firstTime("vink:dropped")) window.setTimeout(() => void vink.say("Thanks for the lift. Mind the edge next time.", 3200), 300);
   };
   onThemeChange(() => game.unlock("theme"));
   document.addEventListener("click", (e) => {
@@ -317,7 +317,7 @@ function questView(game: Game): HTMLElement {
         return h(
           "div",
           { class: `quest ${done ? "done" : "locked"}` },
-          h("span", { class: "quest-icon" }, hidden ? "?" : q.icon),
+          h("span", { class: "quest-icon" }, hidden ? icon("alert", 16) : icon(q.icon, 16)),
           h("div", {}, h("strong", {}, hidden ? "Secret quest" : q.title), h("span", {}, (hidden ? q.hint : q.desc) + progress)),
           h("span", { class: "quest-xp" }, done ? "✓" : `${q.xp} xp`),
         );

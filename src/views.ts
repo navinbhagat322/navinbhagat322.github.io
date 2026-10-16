@@ -245,8 +245,8 @@ export function welcome(): HTMLElement {
     h(
       "div",
       { class: "hero-hurry" },
-      cmd("tldr", h("span", {}, "⚡ In a hurry? Read the 30-second summary"), "hurry-btn"),
-      cmd("stack", h("span", {}, icon("branch", 14), "See how it all fits together"), "ghost-btn"),
+      cmd("tldr", h("span", {}, icon("zap", 15), "Read the 30-second summary", h("em", { class: "cta-tag" }, "TL;DR")), "cta cta-main"),
+      cmd("stack", h("span", {}, icon("branch", 15), "See how it all fits together"), "cta"),
     ),
     h(
       "div",
@@ -265,7 +265,7 @@ export function welcome(): HTMLElement {
       cmd("ask what does navin work on?", h("span", {}, icon("sparkle", 13), "ask a question"), "chip-btn"),
       cmd("sql SELECT name, year FROM projects WHERE kind = 'work'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
       cmd("contact", "contact", "chip-btn"),
-      cmd("quests", h("span", {}, "🏆 quests"), "chip-btn"),
+      cmd("quests", h("span", {}, icon("trophy", 13), "quests"), "chip-btn"),
     ),
   );
 }

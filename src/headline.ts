@@ -11,11 +11,11 @@ export interface Phrase {
 }
 
 export const PHRASES: Phrase[] = [
-  { text: "AI agents", run: "projects agents" },
-  { text: "agent evals", run: "projects evals" },
-  { text: "RAG memory", run: "projects rag-memory" },
-  { text: "MCP servers", run: "projects ternodbi" },
-  { text: "safe text-to-SQL", run: "projects sqlshield" },
+  { text: "AI Agents", run: "projects agents" },
+  { text: "Agent Evals", run: "projects evals" },
+  { text: "RAG Memory", run: "projects rag-memory" },
+  { text: "MCP Servers", run: "projects ternodbi" },
+  { text: "Safe Text-to-SQL", run: "projects sqlshield" },
 ];
 
 export function headline(): HTMLElement {
@@ -24,7 +24,7 @@ export function headline(): HTMLElement {
   const root = h(
     "h2",
     { class: "headline", "aria-label": `I build ${PHRASES.map((p) => p.text).join(", ")}` },
-    h("span", { class: "headline-lead", "aria-hidden": "true" }, "I build "),
+    h("span", { class: "headline-lead", "aria-hidden": "true" }, "I build"),
     button,
   );
   button.setAttribute("aria-hidden", "true");

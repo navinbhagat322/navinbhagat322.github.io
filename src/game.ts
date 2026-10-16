@@ -5,32 +5,30 @@ export interface Quest {
   icon: string;
   title: string;
   desc: string;
-  /** Shown instead of the description while locked, for secret quests. */
   hint?: string;
   xp: number;
   secret?: boolean;
-  /** For counted quests: how many steps it takes. */
   goal?: number;
 }
 
 export const EXPLORE_COMMANDS = ["about", "projects", "experience", "skills", "contact"];
 
 export const quests: Quest[] = [
-  { id: "hello", icon: "👋", title: "Hello, world", desc: "Run your first command", xp: 10 },
-  { id: "explorer", icon: "🧭", title: "Explorer", desc: "Open about, projects, experience, skills and contact", xp: 50, goal: EXPLORE_COMMANDS.length },
-  { id: "deep-dive", icon: "🔍", title: "Deep dive", desc: "Open a project's details", xp: 20 },
-  { id: "query", icon: "🗄️", title: "Query wizard", desc: "Run a SQL query against the résumé", xp: 30 },
-  { id: "shipped", icon: "📦", title: "Fresh commits", desc: "Check what Navin shipped this week", xp: 10 },
-  { id: "curious", icon: "💬", title: "Curious mind", desc: "Ask Vink 3 questions in plain English", xp: 30, goal: 3 },
-  { id: "palette", icon: "⌘", title: "Power user", desc: "Open the ⌘K command palette", xp: 20 },
-  { id: "hacker", icon: "📂", title: "Poking around", desc: "Read a file with cat", xp: 15 },
-  { id: "theme", icon: "🌗", title: "Other side", desc: "Switch the theme", xp: 10 },
-  { id: "poke", icon: "👉", title: "That tickles", desc: "Poke Vink 5 times", xp: 15, goal: 5 },
-  { id: "lift", icon: "🫳", title: "Personal space", desc: "Pick Vink up and move him", xp: 15 },
-  { id: "spark", icon: "🧠", title: "Neuroscientist", desc: "Fire 10 neurons in the background network", hint: "The background isn't just decoration…", xp: 15, goal: 10, secret: true },
-  { id: "talk", icon: "✉️", title: "Let's talk", desc: "Open Navin's email or LinkedIn", xp: 40 },
-  { id: "root", icon: "🔑", title: "Root access", desc: "Hired Navin with sudo", hint: "Some commands need superuser rights…", xp: 40, secret: true },
-  { id: "oops", icon: "🫠", title: "It happens", desc: "Ran a command that doesn't exist", hint: "Make a typo. Seriously.", xp: 5, secret: true },
+  { id: "hello", icon: "terminal", title: "Hello, world", desc: "Run your first command", xp: 10 },
+  { id: "explorer", icon: "compass", title: "Explorer", desc: "Open about, projects, experience, skills and contact", xp: 50, goal: EXPLORE_COMMANDS.length },
+  { id: "deep-dive", icon: "search", title: "Deep dive", desc: "Open a project's details", xp: 20 },
+  { id: "query", icon: "database", title: "Query wizard", desc: "Run a SQL query against the résumé", xp: 30 },
+  { id: "shipped", icon: "box", title: "Fresh commits", desc: "Check what Navin shipped this week", xp: 10 },
+  { id: "curious", icon: "chat", title: "Curious mind", desc: "Ask Vink 3 questions in plain English", xp: 30, goal: 3 },
+  { id: "palette", icon: "command", title: "Power user", desc: "Open the ⌘K command palette", xp: 20 },
+  { id: "hacker", icon: "file", title: "Poking around", desc: "Read a file with cat", xp: 15 },
+  { id: "theme", icon: "moon", title: "Other side", desc: "Switch the theme", xp: 10 },
+  { id: "poke", icon: "pointer", title: "That tickles", desc: "Poke Vink 5 times", xp: 15, goal: 5 },
+  { id: "lift", icon: "move", title: "Personal space", desc: "Pick Vink up and move him", xp: 15 },
+  { id: "spark", icon: "network", title: "Neuroscientist", desc: "Fire 10 neurons in the background network", hint: "The background isn't just decoration…", xp: 15, goal: 10, secret: true },
+  { id: "talk", icon: "mail", title: "Let's talk", desc: "Open Navin's email or LinkedIn", xp: 40 },
+  { id: "root", icon: "key", title: "Root access", desc: "Hired Navin with sudo", hint: "Some commands need superuser rights…", xp: 40, secret: true },
+  { id: "oops", icon: "alert", title: "It happens", desc: "Ran a command that doesn't exist", hint: "Make a typo. Seriously.", xp: 5, secret: true },
 ];
 
 export const levels = [

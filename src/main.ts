@@ -99,7 +99,7 @@ async function startShell() {
   const quickbar = h(
     "nav",
     { class: "quickbar", "aria-label": "Quick commands" },
-    ...["tldr", "projects", "about", "experience", "skills", "contact", "help"].map((c) => h("button", { type: "button", "data-run": c }, c === "tldr" ? "⚡ tldr" : c)),
+    ...["tldr", "projects", "about", "experience", "skills", "contact", "help"].map((c) => h("button", { type: "button", "data-run": c }, c)),
   );
 
   const win = h("div", { class: "window" }, titlebar, scroller, quickbar, shell.composer, statusbar);

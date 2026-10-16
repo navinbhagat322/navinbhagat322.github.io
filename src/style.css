@@ -521,6 +521,27 @@ code {
   transform: translateY(-1px);
 }
 
+/* pressed state: a quick dip with a gold edge, the same everywhere */
+:is(.cta, .chip-btn, .ghost-btn, .kbd-btn, .icon-btn, .quickbar button, .popover-item, .palette-item, button.sys-node):active {
+  transform: translateY(1px) scale(0.98);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  transition-duration: 0.05s;
+}
+
+.cmd-link:active,
+.proof-link:active,
+.sb-link:active {
+  color: var(--accent-2);
+}
+
+.chip-btn:hover,
+.ghost-btn:hover,
+.quickbar button:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line-strong));
+}
+
 /* ============ hero ============ */
 
 .hero {
@@ -945,10 +966,16 @@ button.sys-node:hover {
   cursor: pointer;
 }
 
-/* The rotating phrase: pixel type, gold → orange, with a hard 8-bit drop shadow. */
+.headline-lead {
+  margin-right: 0.3em;
+}
+
+/* The rotating phrase: pixel type in title case, gold → orange, with a hard 8-bit
+   drop shadow. Pixel fonts have a full-width space, so word spacing is pulled in. */
 .rot-word {
   font: 400 0.62em/1.35 var(--pixel);
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
+  word-spacing: -0.42em;
   white-space: nowrap;
   background: var(--grad);
   -webkit-background-clip: text;
@@ -1012,7 +1039,7 @@ button.sys-node:hover {
 }
 
 .ghost-btn:hover {
-  border-color: var(--line-strong);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line-strong));
   background: var(--card);
   color: var(--fg);
 }
@@ -1025,24 +1052,57 @@ button.sys-node:hover {
   margin-top: 22px;
 }
 
-.hurry-btn {
+/* The two hero actions: a matched pair of outlined buttons. The summary one is
+   marked with a gold icon and a small pixel tag rather than a heavy fill. */
+.cta {
   display: inline-flex;
   align-items: center;
-  height: 38px;
-  padding: 0 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  height: 40px;
+  padding: 0 14px 0 13px;
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent-2-soft));
+  background: var(--card);
   color: var(--fg);
-  font: 600 13.5px var(--sans);
+  font: 500 13.5px var(--sans);
   cursor: pointer;
-  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
-.hurry-btn:hover {
+.cta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cta .icon {
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.cta-main .icon {
+  color: var(--accent);
+}
+
+.cta:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line-strong));
+  background: var(--card-hover);
   transform: translateY(-1px);
-  border-color: var(--accent);
-  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 8px 22px -14px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.cta:hover .icon {
+  color: var(--accent);
+}
+
+.cta-tag {
+  margin-left: 2px;
+  padding: 4px 6px 3px;
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: 400 7.5px/1 var(--pixel);
+  font-style: normal;
+  letter-spacing: 0.02em;
 }
 
 .tldr {
@@ -2921,8 +2981,8 @@ td.bool {
 }
 
 .toast-icon {
-  font-size: 14px;
-  line-height: 1;
+  display: grid;
+  color: var(--accent);
 }
 
 .toast-label {
@@ -3030,15 +3090,12 @@ td.bool {
   height: 34px;
   border-radius: 9px;
   background: var(--hover-strong);
-  font-size: 16px;
-  filter: grayscale(1);
-  opacity: 0.55;
+  color: var(--faint);
 }
 
 .quest.done .quest-icon {
-  filter: none;
-  opacity: 1;
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent-2-soft));
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .quest strong {

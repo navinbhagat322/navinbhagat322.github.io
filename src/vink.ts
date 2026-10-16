@@ -342,7 +342,7 @@ export class Vink {
         this.el.classList.remove("walking", "facing-left");
         this.el.classList.add("dragging");
         this.setPose("held");
-        void this.say("Whoa — easy! 😵", 2000);
+        void this.say("Whoa — easy!", 2000);
       }
       if (dragging) this.place(startOffset - dx, Math.max(-70, Math.min(0, dy - 18)));
     });
