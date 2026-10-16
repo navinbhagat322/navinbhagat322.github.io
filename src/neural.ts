@@ -113,8 +113,8 @@ export class NeuralBackground {
     this.colors = {
       node: dark ? "rgba(200, 205, 225, 0.42)" : "rgba(60, 64, 90, 0.34)",
       line: dark ? "200, 205, 225" : "60, 64, 90",
-      a: css.getPropertyValue("--accent").trim() || "#22d3ee",
-      b: css.getPropertyValue("--violet").trim() || "#a78bfa",
+      a: css.getPropertyValue("--accent").trim() || "#facc15",
+      b: css.getPropertyValue("--accent-2").trim() || "#fb923c",
     };
     if (!this.running) this.draw();
   }

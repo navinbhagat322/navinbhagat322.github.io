@@ -17,10 +17,14 @@
   --fg-soft: #c4c4cc;
   --muted: #8a8a96;
   --faint: #55555f;
-  --accent: #22d3ee;
-  --accent-soft: rgba(34, 211, 238, 0.12);
-  --violet: #a78bfa;
-  --violet-soft: rgba(167, 139, 250, 0.12);
+  /* warm arcade palette: gold → orange */
+  --accent: #facc15;
+  --accent-soft: rgba(250, 204, 21, 0.13);
+  --accent-2: #fb923c;
+  --accent-2-soft: rgba(251, 146, 60, 0.13);
+  --grad: linear-gradient(90deg, #fde047 0%, #facc15 40%, #fb923c 100%);
+  --grad-tile: linear-gradient(140deg, #fde047 0%, #facc15 45%, #fb923c 100%);
+  --grad-shadow: rgba(194, 65, 12, 0.85);
   --green: #4ade80;
   --green-soft: rgba(74, 222, 128, 0.12);
   --amber: #fbbf24;
@@ -45,10 +49,14 @@
   --fg-soft: #3f3f46;
   --muted: #71717a;
   --faint: #a1a1aa;
-  --accent: #0891b2;
-  --accent-soft: rgba(8, 145, 178, 0.1);
-  --violet: #7c3aed;
-  --violet-soft: rgba(124, 58, 237, 0.08);
+  /* deeper ambers so text stays readable on white */
+  --accent: #b45309;
+  --accent-soft: rgba(217, 119, 6, 0.12);
+  --accent-2: #c2410c;
+  --accent-2-soft: rgba(234, 88, 12, 0.1);
+  --grad: linear-gradient(90deg, #ca8a04 0%, #d97706 45%, #ea580c 100%);
+  --grad-tile: linear-gradient(140deg, #fde047 0%, #facc15 45%, #fb923c 100%);
+  --grad-shadow: rgba(124, 45, 18, 0.35);
   --green: #16a34a;
   --green-soft: rgba(22, 163, 74, 0.1);
   --amber: #b45309;
@@ -60,6 +68,8 @@
 :root {
   --sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* 8-bit arcade face, used sparingly: the rotating headline and the game UI */
+  --pixel: "Press Start 2P", ui-monospace, monospace;
   --radius: 14px;
 }
 
@@ -352,7 +362,7 @@ code {
 }
 
 .block-path {
-  color: var(--violet);
+  color: var(--accent-2);
   flex: none;
 }
 
@@ -443,7 +453,7 @@ code {
 }
 
 .tok-flag {
-  color: var(--violet);
+  color: var(--accent-2);
 }
 
 .tok-kw {
@@ -480,7 +490,7 @@ code {
 }
 
 .cmd-link.dir {
-  color: var(--violet);
+  color: var(--accent-2);
 }
 
 .chip-btn {
@@ -531,11 +541,11 @@ code {
   height: 48px;
   flex: none;
   border-radius: 15px;
-  background: linear-gradient(135deg, #22d3ee, #6366f1 55%, #a78bfa);
-  color: #fff;
+  background: var(--grad-tile);
+  color: #1c1305;
   font: 650 19px var(--sans);
   letter-spacing: -0.02em;
-  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px -10px rgba(251, 146, 60, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .hero h1 {
@@ -935,32 +945,31 @@ button.sys-node:hover {
   cursor: pointer;
 }
 
+/* The rotating phrase: pixel type, gold → orange, with a hard 8-bit drop shadow. */
 .rot-word {
-  background: linear-gradient(90deg, var(--accent), var(--violet));
+  font: 400 0.62em/1.35 var(--pixel);
+  letter-spacing: 0;
+  white-space: nowrap;
+  background: var(--grad);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  white-space: nowrap;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 8px;
-  text-decoration-thickness: 2px;
-  transition: text-decoration-color 0.2s;
+  filter: drop-shadow(0.09em 0.09em 0 var(--grad-shadow));
+  transition: filter 0.2s;
 }
 
 .rot:hover .rot-word {
-  text-decoration-color: color-mix(in srgb, var(--violet) 60%, transparent);
+  filter: drop-shadow(0.09em 0.09em 0 var(--grad-shadow)) brightness(1.12);
 }
 
 .rot-caret {
   display: inline-block;
-  width: 3px;
-  height: 0.9em;
-  margin-left: 4px;
-  border-radius: 2px;
-  background: var(--violet);
-  transform: translateY(0.1em);
-  animation: caret-blink 1s steps(1) infinite;
+  width: 0.36em;
+  height: 0.5em;
+  margin-left: 0.14em;
+  background: var(--accent-2);
+  box-shadow: 0.06em 0.06em 0 var(--grad-shadow);
+  animation: caret-blink 0.9s steps(1) infinite;
 }
 
 .rot.typing .rot-caret {
@@ -1023,7 +1032,7 @@ button.sys-node:hover {
   padding: 0 16px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent-soft), var(--violet-soft));
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent-2-soft));
   color: var(--fg);
   font: 600 13.5px var(--sans);
   cursor: pointer;
@@ -1416,8 +1425,8 @@ button.sys-node:hover {
 
 .badge-personal,
 .badge-internship {
-  background: var(--violet-soft);
-  color: var(--violet);
+  background: var(--accent-2-soft);
+  color: var(--accent-2);
 }
 
 .tags {
@@ -1802,7 +1811,7 @@ td.bool {
 }
 
 .step-label {
-  color: var(--violet);
+  color: var(--accent-2);
 }
 
 .step-detail {
@@ -1820,9 +1829,9 @@ td.bool {
   gap: 10px;
   max-width: 760px;
   padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--violet) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent);
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--violet-soft), transparent 70%);
+  background: linear-gradient(135deg, var(--accent-2-soft), transparent 70%);
   animation: fade-in 0.3s ease-out both;
 }
 
@@ -1830,7 +1839,7 @@ td.bool {
   display: grid;
   place-items: center;
   height: 1.6em;
-  color: var(--violet);
+  color: var(--accent-2);
 }
 
 .answer p {
@@ -2359,7 +2368,7 @@ td.bool {
 }
 
 .vink-svg:is([data-pose="think"], [data-pose="type"]) .v-lens {
-  fill: rgba(34, 211, 238, 0.5);
+  fill: rgba(250, 204, 21, 0.55);
   animation: v-glow 1.2s ease-in-out infinite;
 }
 
@@ -2598,7 +2607,7 @@ td.bool {
 
 @keyframes v-glow {
   50% {
-    fill: rgba(34, 211, 238, 0.8);
+    fill: rgba(253, 224, 71, 0.85);
   }
 }
 
@@ -2752,11 +2761,11 @@ td.bool {
 
 .vink-name {
   display: block;
-  margin-bottom: 2px;
-  font: 600 10.5px var(--mono);
-  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  font: 400 8px/1.4 var(--pixel);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--violet);
+  color: var(--accent-2);
 }
 
 .vink-close {
@@ -2797,7 +2806,7 @@ td.bool {
   border: 0;
   cursor: pointer;
   overflow: hidden;
-  background: linear-gradient(160deg, #22d3ee 0%, #6366f1 60%, #a78bfa 100%);
+  background: var(--grad-tile);
 }
 
 .avatar.vink-avatar .vink-svg {
@@ -2859,7 +2868,8 @@ td.bool {
 }
 
 .xp-level {
-  color: var(--violet);
+  font: 400 8px/1 var(--pixel);
+  color: var(--accent);
 }
 
 .xp-bar {
@@ -2875,12 +2885,12 @@ td.bool {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--violet));
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
   transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .xp.bump .xp-bar {
-  box-shadow: 0 0 0 3px var(--violet-soft);
+  box-shadow: 0 0 0 3px var(--accent-2-soft);
 }
 
 .toasts {
@@ -2921,7 +2931,7 @@ td.bool {
 }
 
 .toast-xp {
-  font: 600 11.5px var(--mono);
+  font: 400 8.5px/1 var(--pixel);
   color: var(--green);
 }
 
@@ -2952,7 +2962,7 @@ td.bool {
   border: 1px solid var(--line);
   border-radius: 14px;
   background:
-    linear-gradient(135deg, var(--violet-soft), transparent 60%),
+    linear-gradient(135deg, var(--accent-2-soft), transparent 60%),
     var(--card);
 }
 
@@ -2963,12 +2973,13 @@ td.bool {
 
 .quest-level {
   margin: 0;
-  font: 650 18px/1.2 var(--sans);
-  letter-spacing: -0.01em;
+  font: 400 12px/1.7 var(--pixel);
+  color: var(--accent);
 }
 
 .quest-level small {
-  margin-left: 8px;
+  display: block;
+  margin-left: 0;
   font: 500 12px var(--mono);
   color: var(--muted);
 }
@@ -2985,7 +2996,7 @@ td.bool {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--violet));
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
 
 .quest-next {
@@ -3027,7 +3038,7 @@ td.bool {
 .quest.done .quest-icon {
   filter: none;
   opacity: 1;
-  background: linear-gradient(135deg, var(--accent-soft), var(--violet-soft));
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent-2-soft));
 }
 
 .quest strong {
@@ -3264,6 +3275,15 @@ body.plain-mode #app {
   .headline {
     margin-top: 20px;
     font-size: 30px;
+  }
+
+  .rot {
+    display: flex;
+    margin-top: 6px;
+  }
+
+  .rot-word {
+    font-size: 0.6em;
   }
 
   .hero-sub {

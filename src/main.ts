@@ -1,5 +1,6 @@
 import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
+import "@fontsource/press-start-2p/400.css";
 import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";

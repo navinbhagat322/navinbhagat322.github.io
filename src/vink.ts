@@ -194,7 +194,7 @@ export function vinkSVG(crop: "full" | "head" = "full"): string {
     return `<svg class="vink-svg vink-head-only" viewBox="29 6 62 66" data-pose="idle" aria-hidden="true">${head()}</svg>`;
   }
   return `<svg class="vink-svg" viewBox="0 -4 120 196" data-pose="idle" role="img" aria-label="Vink, Navin's illustrated twin">
-    <defs><linearGradient id="v-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs>
+    <defs><linearGradient id="v-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fde68a"/></linearGradient></defs>
     <ellipse class="v-shadow" cx="60" cy="187.5" rx="24" ry="3.2" fill="#000" opacity=".25"/>
     <g class="v-all">
       <g class="v-body">
@@ -446,7 +446,7 @@ export class Vink {
 
   confetti(host: HTMLElement) {
     if (reducedMotion()) return;
-    const colors = ["#22d3ee", "#a78bfa", "#4ade80", "#fbbf24", "#f472b6", "#9b4a2f"];
+    const colors = ["#fde047", "#facc15", "#fb923c", "#f97316", "#4ade80", "#f472b6"];
     const layer = h("div", { class: "confetti", "aria-hidden": "true" });
     for (let i = 0; i < 70; i++) {
       const piece = h("i", {});

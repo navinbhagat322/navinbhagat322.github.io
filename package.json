@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Navin Bhagat's portfolio \u2014 an agent shell you can talk to or query with SQL.",
+  "description": "Navin Bhagat's portfolio — an agent shell you can talk to or query with SQL.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
-    "@fontsource-variable/geist-mono": "^5.3.0"
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@fontsource/press-start-2p": "^5.3.0"
   }
 }
