@@ -1,6 +1,6 @@
 // Rich output rendered inside command blocks.
 
-import { experience, links, profile, projects, skills, stats, type Project } from "./content";
+import { experience, links, profile, projects, recruiter, skills, stats, type Project } from "./content";
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
 import { vinkSVG } from "./vink";
@@ -233,6 +233,11 @@ export function welcome(): HTMLElement {
       ),
     ),
     h("p", { class: "hero-tagline" }, profile.tagline),
+    h(
+      "div",
+      { class: "hero-hurry" },
+      cmd("tldr", h("span", {}, "⚡ In a hurry? Read the 30-second summary"), "hurry-btn"),
+    ),
     statRow(),
     h(
       "div",
@@ -245,13 +250,64 @@ export function welcome(): HTMLElement {
     h(
       "div",
       { class: "hero-try" },
-      h("span", { class: "muted" }, "try"),
+      h("span", { class: "muted" }, "or explore"),
       cmd("projects", "projects", "chip-btn"),
       cmd("about", "about", "chip-btn"),
       cmd("ask what does navin work on?", h("span", {}, icon("sparkle", 13), "ask a question"), "chip-btn"),
       cmd("sql SELECT name, year FROM projects WHERE kind = 'open-source'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
       cmd("contact", "contact", "chip-btn"),
       cmd("quests", h("span", {}, "🏆 quests"), "chip-btn"),
+    ),
+  );
+}
+
+export function tldrView(): HTMLElement {
+  return h(
+    "div",
+    { class: "tldr" },
+    h(
+      "div",
+      { class: "tldr-head" },
+      vinkAvatar(),
+      h(
+        "div",
+        {},
+        h("span", { class: "tldr-kicker" }, icon("sparkle", 12), "30-second summary"),
+        h("h3", {}, profile.name),
+        h("p", {}, recruiter.pitch),
+      ),
+    ),
+    h(
+      "ol",
+      { class: "tldr-list" },
+      ...recruiter.highlights.map((x) =>
+        h(
+          "li",
+          {},
+          h("strong", {}, x.href ? link(x.href, h("span", {}, x.title, icon("arrow", 12))) : x.title),
+          h("span", {}, x.body),
+        ),
+      ),
+    ),
+    h("dl", { class: "tldr-facts" }, ...recruiter.facts.flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v)])),
+    h(
+      "div",
+      { class: "tldr-actions" },
+      link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email Navin"), "btn primary"),
+      copyButton(links.email),
+      link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "btn"),
+      link(links.github, h("span", {}, icon("github", 15), "GitHub"), "btn"),
+    ),
+    h(
+      "p",
+      { class: "tldr-more" },
+      "Want the detail? ",
+      cmd("projects"),
+      " · ",
+      cmd("experience"),
+      " · ",
+      link("?plain", "plain page"),
+      " — or stick around and explore with Vink.",
     ),
   );
 }

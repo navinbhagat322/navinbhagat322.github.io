@@ -59,19 +59,73 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   paintXp();
 
   // ---------- unlocking ----------
-  function toast(q: Quest) {
+  // One channel at a time: a level-up or the finale is Vink's to announce;
+  // everything else is a single small toast. Toasts never stack, and wait
+  // while Vink is talking.
+  const toastQueue: { icon: string; label: string; xp: number }[] = [];
+  let toastBusy = false;
+
+  function showNextToast() {
+    if (toastBusy || !toastQueue.length) return;
+    if (vink.speaking) {
+      window.setTimeout(showNextToast, 400);
+      return;
+    }
+    toastBusy = true;
+    const t = toastQueue.shift()!;
     const el = h(
       "div",
       { class: "toast", role: "status" },
-      h("span", { class: "toast-badge" }, q.icon),
-      h("div", {}, h("span", { class: "toast-kicker" }, "quest complete"), h("strong", {}, q.title)),
-      h("span", { class: "toast-xp" }, `+${q.xp} xp`),
+      h("span", { class: "toast-icon", "aria-hidden": "true" }, t.icon),
+      h("span", { class: "toast-label" }, t.label),
+      h("span", { class: "toast-xp" }, `+${t.xp} xp`),
     );
-    toasts.append(el);
+    toasts.replaceChildren(el);
     window.setTimeout(() => {
       el.classList.add("out");
-      window.setTimeout(() => el.remove(), 320);
-    }, 3800);
+      window.setTimeout(() => {
+        el.remove();
+        toastBusy = false;
+        showNextToast();
+      }, 260);
+    }, 2600);
+  }
+
+  // Recruiter fast path: Vink steps aside and rewards are counted silently.
+  let quiet = false;
+  const QUIET_COMMANDS = ["tldr"];
+
+  let pending: Quest[] = [];
+  let flushTimer = 0;
+  function flushUnlocks() {
+    const batch = pending;
+    pending = [];
+    const gained = batch.reduce((n, q) => n + q.xp, 0);
+    const before = levelAt(game.xp - gained);
+    const after = game.level();
+    if (quiet) return;
+
+    if (game.complete) {
+      vink.setPose("celebrate", 5000);
+      vink.confetti(windowEl);
+      void vink.say(
+        ["You found everything. Every quest, every secret. Honestly? Navin should hire ", h("em", {}, "you"), ". Or you could just ", cmd("contact"), " him."],
+        12000,
+      );
+      return;
+    }
+    if (after.number > before) {
+      vink.setPose("celebrate", 2400);
+      void vink.say(["Level up! You're now a ", h("strong", {}, after.title), ". ", cmd("quests"), " shows what's left."], 5000);
+      return;
+    }
+    vink.setPose("celebrate", 1400);
+    toastQueue.push(
+      batch.length === 1
+        ? { icon: batch[0].icon, label: batch[0].title, xp: gained }
+        : { icon: "🏆", label: `${batch.length} quests`, xp: gained },
+    );
+    showNextToast();
   }
 
   game.onChange = () => {
@@ -80,23 +134,9 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     window.setTimeout(() => xpBtn.classList.remove("bump"), 600);
   };
   game.onUnlock = (q) => {
-    toast(q);
-    const before = levelAt(game.xp - q.xp);
-    const after = game.level();
-    if (game.complete) {
-      vink.setPose("celebrate", 5000);
-      vink.confetti(windowEl);
-      void vink.say(
-        ["You found everything. Every quest, every secret. Honestly? Navin should hire ", h("em", {}, "you"), ". Or you could just ", cmd("contact"), " him."],
-        12000,
-      );
-    } else if (after.number > before) {
-      vink.setPose("celebrate", 2600);
-      void vink.say([`Level up! You're now a `, h("strong", {}, after.title), `. `, cmd("quests"), " shows what's left."], 6000);
-    } else {
-      vink.setPose("celebrate", 1800);
-      void vink.say([`${q.icon} ${q.title}. +${q.xp} xp`], 3200);
-    }
+    pending.push(q);
+    clearTimeout(flushTimer);
+    flushTimer = window.setTimeout(flushUnlocks, 120);
   };
 
   vink.onPoke = () => game.step("poke");
@@ -113,6 +153,12 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   // ---------- reacting to commands ----------
   shell.onStart = (name, line) => {
     resetIdle();
+    if (QUIET_COMMANDS.includes(shell.get(name)?.name ?? "")) {
+      quiet = true;
+      vink.hush();
+      vink.setPose("idle");
+      return;
+    }
     if (name === "ask" || (!shell.get(name) && looksLikeQuestion(line))) vink.setPose("think");
     else if (name === "sql") vink.setPose("type");
     else if (name !== "vink") vink.setPose("type");
@@ -120,6 +166,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
 
   shell.onRun = ({ name, line, ok, known }) => {
     const canonical = shell.get(name)?.name ?? name;
+    if (quiet) window.setTimeout(() => (quiet = false), 400);
     const args = line.split(/\s+/).slice(1);
     const question = !known && looksLikeQuestion(line);
 
@@ -181,7 +228,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   }, 4000);
 
   // ---------- hello ----------
-  window.setTimeout(() => {
+  if (!new URLSearchParams(location.search).has("tldr")) window.setTimeout(() => {
     vink.setPose("wave", 1800);
     if (game.xp > 0) {
       const lvl = game.level();

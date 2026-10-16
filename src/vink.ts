@@ -258,6 +258,11 @@ export class Vink {
     return this.current;
   }
 
+  /** Is the speech bubble on screen right now? */
+  get speaking() {
+    return !this.bubble.hidden && !this.bubble.classList.contains("out");
+  }
+
   /** Switches pose; with `ms`, returns to idle afterwards. */
   setPose(pose: Pose, ms = 0) {
     clearTimeout(this.poseTimer);

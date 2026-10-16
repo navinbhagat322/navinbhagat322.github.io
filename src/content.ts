@@ -199,3 +199,35 @@ export const skills: Skill[] = [
   ...group("backend", ["Django", "REST APIs", "OAuth 2.0", "PostgreSQL", "MySQL", "Snowflake", "BigQuery"]),
   ...group("infra", ["AWS", "Docker", "Nginx", "Linux", "GitHub Actions", "Git"]),
 ];
+
+/** The 30-second version, for people who don't want to explore. */
+export const recruiter = {
+  pitch:
+    "AI engineer who builds the layer between LLM agents and company databases — shipped and running in production at TernoAI.",
+  highlights: [
+    {
+      title: "Top contributor to TernoDBI",
+      body: "280+ of ~300 commits on the open-source MCP server that lets AI agents query databases safely.",
+      href: "https://github.com/terno-ai/ternodbi",
+    },
+    {
+      title: "Hosted MCP server, end to end",
+      body: "OAuth with dynamic client registration, so it plugs into Claude, Cursor and ChatGPT.",
+    },
+    {
+      title: "9+ production API connectors",
+      body: "GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram — with scoped, encrypted credentials.",
+    },
+    {
+      title: "Guardrails for LLM-generated SQL",
+      body: "SQLShield rewrites and limits agent queries before they run; added Snowflake support.",
+      href: "https://pypi.org/project/sqlshield/",
+    },
+  ],
+  facts: [
+    ["role", "AI Engineer @ TernoAI"],
+    ["education", "B.Tech, IIT Jodhpur · CGPA 8.15"],
+    ["stack", "Python · Django · SQL · MCP · LLM agents · AWS"],
+    ["based in", "India"],
+  ] as [string, string][],
+};

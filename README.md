@@ -9,7 +9,8 @@ Portfolio of **Navin Kumar**, built as a terminal you can actually use:
 - **ask in plain English**: a small rule-based agent shows its plan and tool calls, writes the SQL it needs, then answers
 - **query my résumé with SQL**: `sql SELECT name, year FROM projects ORDER BY year DESC`
 - **Vink**: a little rigged version of me standing on the command bar. His eyes follow your cursor, his glasses glow while he thinks, he reacts to what you do (thinks, types, shrugs, dances, naps), wanders around, and you can poke him or pick him up and drag him
-- **quests**: 13 achievements (two of them secret), XP and levels, toasts, and a confetti ending at 100%. `quests` shows progress
+- **quests**: 13 achievements (two of them secret), XP and levels, one quiet toast at a time (Vink announces level-ups instead), and a confetti ending at 100%. `quests` shows progress
+- **recruiter fast path**: one button (or `tldr`, or [`?tldr`](https://navinbhagat322.github.io/?tldr)) shows a 30-second summary; Vink stays quiet while it's open
 - dark and light themes, a mobile layout, and a plain page at [`?plain`](https://navinbhagat322.github.io/?plain)
 
 Live: https://navinbhagat322.github.io

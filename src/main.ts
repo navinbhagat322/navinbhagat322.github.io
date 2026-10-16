@@ -97,7 +97,7 @@ async function startShell() {
   const quickbar = h(
     "nav",
     { class: "quickbar", "aria-label": "Quick commands" },
-    ...["help", "about", "projects", "experience", "skills", "contact"].map((c) => h("button", { type: "button", "data-run": c }, c)),
+    ...["tldr", "projects", "about", "experience", "skills", "contact", "help"].map((c) => h("button", { type: "button", "data-run": c }, c === "tldr" ? "⚡ tldr" : c)),
   );
 
   const win = h("div", { class: "window" }, titlebar, scroller, quickbar, shell.composer, statusbar);
@@ -132,6 +132,6 @@ async function startShell() {
   shell.focus();
 
   // Deep links: /?cmd=projects  or  /?q=what+is+ternodbi
-  const deep = params.get("cmd") ?? params.get("q");
+  const deep = params.has("tldr") ? "tldr" : (params.get("cmd") ?? params.get("q"));
   if (deep) await shell.type(params.has("q") && !looksLikeQuestion(deep) ? `ask ${deep}` : deep);
 }

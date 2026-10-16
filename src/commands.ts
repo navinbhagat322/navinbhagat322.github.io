@@ -4,7 +4,7 @@ import type { Command } from "./shell";
 import { query, tables } from "./sql";
 import { setTheme, themes } from "./theme";
 import { cmd, h, link } from "./ui";
-import { aboutView, contactView, projectDetail, projectGrid, skillsView, sqlTable, timeline } from "./views";
+import { aboutView, contactView, projectDetail, projectGrid, skillsView, sqlTable, timeline, tldrView } from "./views";
 
 const files: Record<string, string> = {
   "about.md": "about",
@@ -75,6 +75,13 @@ export const commands: Command[] = [
         ),
       );
     },
+  },
+  {
+    name: "tldr",
+    summary: "the 30-second summary, for recruiters in a hurry",
+    group: "explore",
+    aliases: ["summary", "recruiter", "hire"],
+    run: ({ add }) => void add(tldrView()),
   },
   {
     name: "about",
