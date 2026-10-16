@@ -92,7 +92,7 @@ async function startShell() {
     startAnalytics();
     void totalVisits().then((n) => {
       if (!n || n === "0") return;
-      visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, " visits"));
+      visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, n === "1" ? " visit" : " visits"));
       visitsSlot.hidden = false;
     });
   }

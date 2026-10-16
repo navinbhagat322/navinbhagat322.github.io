@@ -47,9 +47,15 @@ let cached: Promise<string | null> | null = null;
 export function totalVisits(): Promise<string | null> {
   if (!analyticsEnabled()) return Promise.resolve(null);
   if (demo()) return Promise.resolve("1,284");
-  cached ??= fetch(`${base()}/counter/TOTAL.json`)
-    .then((r) => (r.ok ? r.json() : null))
-    .then((d: { count?: string } | null) => (d?.count !== undefined ? String(d.count).trim() : null))
-    .catch(() => null);
+
+  const read = (path: string) =>
+    fetch(`${base()}/counter/${path}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { count?: string } | null) => (d?.count !== undefined ? String(d.count).trim() : null))
+      .catch(() => null);
+  const num = (n: string | null) => (n ? Number(n.replace(/[^\d]/g, "")) || 0 : -1);
+  cached ??= Promise.all([read(encodeURIComponent("/")), read("TOTAL")]).then(([home, total]) =>
+    num(home) >= num(total) ? home : total,
+  );
   return cached;
 }
