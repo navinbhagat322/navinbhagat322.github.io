@@ -1,9 +1,6 @@
 // Vink: Navin as a little standing character. Curly hair, clear glasses that glow
 // when he's thinking, a cream sweater with rust-and-black stripes and a polo
 // collar, beige cargo pants and striped sneakers.
-//
-// He's rigged: shoulders, elbows and hips are SVG groups rotated by CSS custom
-// properties, so poses are just numbers and every change between them animates.
 
 import { h, reducedMotion, sleep, type Child } from "./ui";
 
@@ -102,6 +99,8 @@ function torso(): string {
 }
 
 function head(): string {
+  const face =
+    "M41 40 C41 30.5 49 25.5 60 25.5 C71 25.5 79 30.5 79 40 L79.6 49.5 C79.6 57.5 75.4 63.6 69.6 67.6 C66.4 69.9 63.3 71.2 60 71.2 C56.7 71.2 53.6 69.9 50.4 67.6 C44.6 63.6 40.4 57.5 40.4 49.5 Z";
   const curls: [number, number, number][] = [
     [40, 37, 8], [45, 27, 9], [54, 21, 10], [66, 20, 10], [76, 25, 9], [81, 35, 8],
     [49, 31, 6], [60, 28, 6.5], [71, 29, 6], [52, 34, 4], [60, 32.5, 4.2], [68, 34, 4],
@@ -110,48 +109,66 @@ function head(): string {
   return `
   <g class="v-head">
     <ellipse cx="60" cy="34" rx="25" ry="18" fill="${C.hair}"/>
-    <rect x="55" y="64" width="10" height="11" rx="3" fill="${C.skinShade}"/>
-    <circle cx="39.5" cy="51" r="4.2" fill="${C.skinShade}"/>
-    <circle cx="80.5" cy="51" r="4.2" fill="${C.skinShade}"/>
-    <ellipse cx="60" cy="48" rx="20.5" ry="22" fill="${C.skin}"/>
-    <path d="M40.5 52 Q42 69 60 70.5 Q78 69 79.5 52 Q77 63 60 65 Q43 63 40.5 52 Z" fill="${C.hair}" opacity=".3"/>
-    <path d="M54.5 61.4 Q60 59.8 65.5 61.4" stroke="${C.hair}" stroke-width="1.2" opacity=".32" fill="none"/>
+    <path d="M54.5 64 L65.5 64 L65.5 75 Q60 77 54.5 75 Z" fill="${C.skinShade}"/>
+    <path d="M54.5 66 Q60 70.5 65.5 66 L65.5 69 Q60 72.5 54.5 69 Z" fill="#000" opacity=".12"/>
+
+    <ellipse cx="40.2" cy="50" rx="3.4" ry="5" fill="${C.skinShade}"/>
+    <ellipse cx="79.8" cy="50" rx="3.4" ry="5" fill="${C.skinShade}"/>
+    <path d="M40.6 47.5 Q39 50 40.8 52.6 M79.4 47.5 Q81 50 79.2 52.6" stroke="#8d573a" stroke-width=".9" fill="none" opacity=".7"/>
+
+    <path d="${face}" fill="${C.skin}"/>
+    <path d="M73 33 C78 37 79.6 44 79.6 49.5 C79.6 57.5 75.4 63.6 69.6 67.6 C73 60 74.6 50 73 33 Z" fill="#000" opacity=".06"/>
+    <path d="M44.5 54.5 Q47 57 51 57.6" stroke="${C.skinShade}" stroke-width=".9" fill="none" opacity=".45"/>
+    <path d="M75.5 54.5 Q73 57 69 57.6" stroke="${C.skinShade}" stroke-width=".9" fill="none" opacity=".45"/>
+    <path d="M55.5 67.6 Q60 70 64.5 67.6" stroke="${C.skinShade}" stroke-width="1" fill="none" opacity=".35" stroke-linecap="round"/>
+
     <g fill="${C.hair}">${curls.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}"/>`).join("")}</g>
     <g stroke="${C.hairHi}" stroke-width="1.3" stroke-linecap="round" fill="none">
       <path d="M42 26 q3 -3 6 0"/><path d="M51 19 q3 -3 6 0"/><path d="M63 17 q3 -3 6 0"/><path d="M73 22 q3 -3 6 0"/>
       <path d="M56 26 q2.5 -2.5 5 0"/><path d="M78 31 q2.5 -2.5 5 0"/>
     </g>
 
-    <g class="v-brows" stroke="${C.hair}" stroke-width="2" stroke-linecap="round" fill="none">
-      <path d="M46 40.5 Q50.5 38.4 55 40"/><path d="M65 40 Q69.5 38.4 74 40.5"/>
+    <g class="v-brows" fill="${C.hair}">
+      <path d="M45.2 41.8 Q49.6 38.4 55.2 40 L55 41.7 Q50 40.6 46 43 Z"/>
+      <path d="M74.8 41.8 Q70.4 38.4 64.8 40 L65 41.7 Q70 40.6 74 43 Z"/>
     </g>
 
     <g class="v-eyes">
       <g class="e-open">
-        <g class="v-pupils" fill="#1b1412"><ellipse cx="50.5" cy="48" rx="2" ry="2.5"/><ellipse cx="69.5" cy="48" rx="2" ry="2.5"/>
-          <circle cx="51.3" cy="47" r=".7" fill="#fff"/><circle cx="70.3" cy="47" r=".7" fill="#fff"/></g>
+        <path d="M46.8 48.4 Q50.5 44.6 54.2 48.4 Q50.5 50.8 46.8 48.4 Z" fill="#fbf7f2"/>
+        <path d="M65.8 48.4 Q69.5 44.6 73.2 48.4 Q69.5 50.8 65.8 48.4 Z" fill="#fbf7f2"/>
+        <g class="v-pupils" fill="#1b1412">
+          <circle cx="50.5" cy="47.9" r="2.1"/><circle cx="69.5" cy="47.9" r="2.1"/>
+          <circle cx="51.3" cy="47.1" r=".7" fill="#fff"/><circle cx="70.3" cy="47.1" r=".7" fill="#fff"/>
+        </g>
+        <g stroke="#1b1412" stroke-width="1.25" stroke-linecap="round" fill="none">
+          <path d="M46.6 48.2 Q50.5 44.3 54.4 48"/><path d="M65.6 48 Q69.5 44.3 73.4 48.2"/>
+        </g>
       </g>
-      <g class="e-happy" stroke="#1b1412" stroke-width="1.7" stroke-linecap="round" fill="none"><path d="M47.5 49 Q50.5 45.5 53.5 49"/><path d="M66.5 49 Q69.5 45.5 72.5 49"/></g>
-      <g class="e-closed" stroke="#1b1412" stroke-width="1.6" stroke-linecap="round" fill="none"><path d="M47.5 48.5 Q50.5 50.6 53.5 48.5"/><path d="M66.5 48.5 Q69.5 50.6 72.5 48.5"/></g>
+      <g class="e-happy" stroke="#1b1412" stroke-width="1.7" stroke-linecap="round" fill="none"><path d="M47.3 49 Q50.5 45.4 53.7 49"/><path d="M66.3 49 Q69.5 45.4 72.7 49"/></g>
+      <g class="e-closed" stroke="#1b1412" stroke-width="1.6" stroke-linecap="round" fill="none"><path d="M47.3 48.4 Q50.5 50.6 53.7 48.4"/><path d="M66.3 48.4 Q69.5 50.6 72.7 48.4"/></g>
     </g>
 
     <g class="v-glasses">
-      <rect class="v-lens" x="43" y="41.5" width="15" height="13" rx="5" />
-      <rect class="v-lens" x="62" y="41.5" width="15" height="13" rx="5" />
-      <path d="M58 46 Q60 44.6 62 46" stroke="${C.frame}" stroke-width="1.3" fill="none"/>
-      <path d="M43 45.5 L40 44.5 M77 45.5 L80 44.5" stroke="${C.frame}" stroke-width="1.3"/>
-      <path class="v-glint" d="M45.5 44 L48 42.6 M64.5 44 L67 42.6" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
+      <rect class="v-lens" x="43" y="41.8" width="15.4" height="12.6" rx="4.2" />
+      <rect class="v-lens" x="61.6" y="41.8" width="15.4" height="12.6" rx="4.2" />
+      <path d="M58.4 46 Q60 44.8 61.6 46" stroke="${C.frame}" stroke-width="1.3" fill="none"/>
+      <path d="M43 45.4 L40.6 44.6 M77 45.4 L79.4 44.6" stroke="${C.frame}" stroke-width="1.3"/>
+      <path class="v-glint" d="M45.5 44.2 L48 42.8 M64.1 44.2 L66.6 42.8" stroke="#fff" stroke-width="1" stroke-linecap="round"/>
     </g>
-    <path d="M60 50.5 Q62 55 59.4 55.5" stroke="${C.skinShade}" stroke-width="1.2" fill="none" stroke-linecap="round"/>
 
-    <g class="v-cheeks" fill="#e07a6a" opacity=".22"><ellipse cx="46" cy="57" rx="3.4" ry="2"/><ellipse cx="74" cy="57" rx="3.4" ry="2"/></g>
+    <path d="M60.4 47.8 Q62.6 53.4 62 54.6 Q61 55.6 58.8 55" stroke="${C.skinShade}" stroke-width="1.15" fill="none" stroke-linecap="round"/>
+    <path d="M57.6 54.9 Q58.2 55.6 59 55.4" stroke="#8d573a" stroke-width=".8" fill="none" opacity=".6"/>
+
+    <g class="v-cheeks" fill="#e07a6a" opacity=".14"><ellipse cx="46.5" cy="55.6" rx="3.2" ry="1.8"/><ellipse cx="73.5" cy="55.6" rx="3.2" ry="1.8"/></g>
 
     <g class="v-mouth">
-      <path class="m-smile" d="M54 58.5 Q60 63.5 66 58.5" stroke="${C.lip}" stroke-width="1.7" fill="none" stroke-linecap="round"/>
-      <path class="m-open" d="M53.5 58 Q60 67 66.5 58 Z" fill="${C.lip}"/>
-      <path class="m-flat" d="M56 60 L64 60" stroke="${C.lip}" stroke-width="1.7" stroke-linecap="round"/>
-      <path class="m-o" d="M60 57.6 a2.4 2.8 0 1 0 0.01 0 Z" fill="${C.lip}"/>
-      <ellipse class="m-talk" cx="60" cy="60" rx="3.4" ry="2.6" fill="${C.lip}"/>
+      <path class="m-smile" d="M56 61.4 Q60 64.6 64 61.4" stroke="${C.lip}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path class="m-open" d="M55.6 61 Q60 67.4 64.4 61 Q60 62 55.6 61 Z" fill="${C.lip}"/>
+      <path class="m-open" d="M56.8 61.5 Q60 62.3 63.2 61.5 L62.8 62.4 Q60 63 57.2 62.4 Z" fill="#fff" opacity=".85"/>
+      <path class="m-flat" d="M56.6 62 L63.4 62" stroke="${C.lip}" stroke-width="1.7" stroke-linecap="round"/>
+      <ellipse class="m-o" cx="60" cy="62" rx="2.2" ry="2.6" fill="${C.lip}"/>
+      <ellipse class="m-talk" cx="60" cy="62" rx="3" ry="2.2" fill="${C.lip}"/>
     </g>
   </g>`;
 }
@@ -174,7 +191,7 @@ const EXTRAS = `
 /** The full character, or just the head for avatars. */
 export function vinkSVG(crop: "full" | "head" = "full"): string {
   if (crop === "head") {
-    return `<svg class="vink-svg vink-head-only" viewBox="31 12 58 60" data-pose="idle" aria-hidden="true">${head()}</svg>`;
+    return `<svg class="vink-svg vink-head-only" viewBox="29 6 62 66" data-pose="idle" aria-hidden="true">${head()}</svg>`;
   }
   return `<svg class="vink-svg" viewBox="0 -4 120 196" data-pose="idle" role="img" aria-label="Vink, Navin's illustrated twin">
     <defs><linearGradient id="v-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs>
