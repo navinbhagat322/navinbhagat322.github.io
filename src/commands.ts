@@ -1,4 +1,5 @@
 import { activityView, loadActivity } from "./activity";
+import { analyticsEnabled, dashboardUrl, totalVisits } from "./analytics";
 import { ask } from "./agent";
 import { links, projects } from "./content";
 import type { Command } from "./shell";
@@ -91,6 +92,41 @@ export const commands: Command[] = [
     group: "explore",
     aliases: ["system", "architecture", "how"],
     run: ({ add }) => void add(systemDiagram()),
+  },
+  {
+    name: "visits",
+    summary: "how many people have visited this site",
+    group: "explore",
+    aliases: ["stats", "analytics", "views"],
+    hidden: !analyticsEnabled(),
+    run: async ({ add, out }) => {
+      if (!analyticsEnabled()) {
+        out(h("span", { class: "muted" }, "Visit counting isn't switched on for this site."));
+        return;
+      }
+      const total = await totalVisits();
+      if (!total) {
+        out(h("span", { class: "muted" }, "Couldn't load the visit count right now."));
+        return;
+      }
+      add(
+        h(
+          "div",
+          { class: "visits" },
+          h("span", { class: "visits-kicker" }, "Profile visits"),
+          h("strong", { class: "visits-count" }, total),
+          h("p", {}, "Including yours — thanks for stopping by."),
+          h(
+            "p",
+            { class: "visits-foot" },
+            "Counted with ",
+            link("https://www.goatcounter.com", "GoatCounter"),
+            ": privacy-friendly, no cookies, no tracking across sites.",
+            dashboardUrl() ? h("span", {}, " ", link(dashboardUrl(), "Full stats →")) : null,
+          ),
+        ),
+      );
+    },
   },
   {
     name: "activity",

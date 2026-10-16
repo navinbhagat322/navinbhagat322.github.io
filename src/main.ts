@@ -4,6 +4,7 @@ import "@fontsource/press-start-2p/400.css";
 import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";
+import { analyticsEnabled, startAnalytics, totalVisits, trackCommand } from "./analytics";
 import { ask, looksLikeQuestion } from "./agent";
 import { commands } from "./commands";
 import { links, profile } from "./content";
@@ -85,12 +86,24 @@ async function startShell() {
   setInterval(tick, 30_000);
 
   const xpSlot = h("span", {});
+  // Visit count: hidden until GoatCounter is set up and the number loads.
+  const visitsSlot = h("button", { type: "button", class: "sb-item sb-link sb-visits", "data-run": "visits", title: "Profile visits", hidden: true });
+  if (analyticsEnabled()) {
+    startAnalytics();
+    void totalVisits().then((n) => {
+      if (!n) return;
+      visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, " visits"));
+      visitsSlot.hidden = false;
+    });
+  }
+
   const statusbar = h(
     "footer",
     { class: "statusbar" },
-    h("span", { class: "sb-item" }, icon("branch", 12), "main"),
+    h("span", { class: "sb-item sb-hide-mobile" }, icon("branch", 12), "main"),
     h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "projects" }, h("span", { class: "pulse small" }), "building Terno AI"),
     h("span", { class: "sb-spacer" }),
+    visitsSlot,
     xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),
     h("span", { class: "sb-item sb-clock" }, clock),
@@ -119,6 +132,15 @@ async function startShell() {
     const empty = t === app || t === document.body || t === document.documentElement || t.classList.contains("viewport") || t.classList.contains("feed") || t.classList.contains("hero");
     if (empty && e.button === 0) neural.spike(e.clientX, e.clientY);
   });
+  // Count which commands get used (names only, never what was typed).
+  const onRun = shell.onRun;
+  shell.onRun = (info) => {
+    onRun?.(info);
+    const name = shell.get(info.name)?.name;
+    if (name) trackCommand(name);
+    else if (looksLikeQuestion(info.line)) trackCommand("question");
+  };
+
   const onStart = shell.onStart;
   shell.onStart = (name, line) => {
     onStart?.(name, line);

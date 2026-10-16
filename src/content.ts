@@ -1,6 +1,10 @@
 // Everything the site says lives here. Edit this file, not the engine.
 // Source of truth: Navin's résumé + public GitHub activity.
 
+export const site = {
+  goatcounter: "navinkumar",
+};
+
 export const profile = {
   name: "Navin Kumar",
   handle: "navin",

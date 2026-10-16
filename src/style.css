@@ -1044,6 +1044,51 @@ button.sys-node:hover {
   color: var(--fg);
 }
 
+/* visit counter */
+.sb-visits .icon {
+  color: var(--accent);
+}
+
+.visits {
+  display: grid;
+  gap: 4px;
+  max-width: 420px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background:
+    linear-gradient(140deg, var(--accent-soft), transparent 60%),
+    var(--card);
+}
+
+.visits-kicker {
+  font: 400 8px/1.4 var(--pixel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.visits-count {
+  font: 400 30px/1.3 var(--pixel);
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(2px 2px 0 var(--grad-shadow));
+}
+
+.visits p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--fg-soft);
+}
+
+.visits .visits-foot {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
 /* recruiter fast path */
 .hero-hurry {
   display: flex;
@@ -3474,6 +3519,10 @@ body.plain-mode #app {
   }
 
   .sb-hide-mobile {
+    display: none;
+  }
+
+  .sb-visits-word {
     display: none;
   }
 
