@@ -3,6 +3,13 @@
 import { links, profile, projects } from "./content";
 import { h, icon, link } from "./ui";
 import { contactView, skillsView, statRow, timeline } from "./views";
+import { vinkSVG } from "./vink";
+
+function vinkHead(): HTMLElement {
+  const el = h("div", { class: "avatar vink-avatar", "aria-hidden": "true" });
+  el.innerHTML = vinkSVG("head");
+  return el;
+}
 
 export function renderPlain(root: HTMLElement) {
   document.body.classList.add("plain-mode");
@@ -14,7 +21,7 @@ export function renderPlain(root: HTMLElement) {
       h(
         "header",
         { class: "plain-head" },
-        h("div", { class: "avatar", "aria-hidden": "true" }, "NK"),
+        vinkHead(),
         h("h1", {}, profile.name),
         h("p", { class: "plain-role" }, `${profile.role} at ${profile.company} · ${profile.education}`),
         h("p", { class: "plain-tagline" }, profile.tagline),

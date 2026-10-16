@@ -30,7 +30,7 @@ function fuzzy(query: string, text: string): number {
   return score;
 }
 
-export function createPalette(shell: Shell) {
+export function createPalette(shell: Shell, onOpen?: () => void) {
   const actions = (): Action[] => [
     ...shell.list().map((c) => ({
       title: c.name,
@@ -157,6 +157,7 @@ export function createPalette(shell: Shell) {
     backdrop.hidden = false;
     requestAnimationFrame(() => backdrop.classList.add("open"));
     input.focus();
+    onOpen?.();
   }
 
   function close() {

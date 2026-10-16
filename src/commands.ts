@@ -32,6 +32,7 @@ export const commands: Command[] = [
       const groups: [string, string][] = [
         ["explore", "Explore"],
         ["tools", "Tools"],
+        ["play", "Play"],
         ["system", "System"],
       ];
       add(

@@ -3,6 +3,13 @@
 import { experience, links, profile, projects, skills, stats, type Project } from "./content";
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
+import { vinkSVG } from "./vink";
+
+export function vinkAvatar(): HTMLElement {
+  const el = h("button", { type: "button", class: "avatar vink-avatar", "data-run": "vink", title: "This is Vink. Say hi.", "aria-label": "Meet Vink" });
+  el.innerHTML = vinkSVG("head");
+  return el;
+}
 
 const kindLabel: Record<Project["kind"], string> = {
   work: "TernoAI",
@@ -210,7 +217,7 @@ export function welcome(): HTMLElement {
     h(
       "div",
       { class: "hero-id" },
-      h("div", { class: "avatar", "aria-hidden": "true" }, "NK"),
+      vinkAvatar(),
       h(
         "div",
         {},
@@ -244,6 +251,7 @@ export function welcome(): HTMLElement {
       cmd("ask what does navin work on?", h("span", {}, icon("sparkle", 13), "ask a question"), "chip-btn"),
       cmd("sql SELECT name, year FROM projects WHERE kind = 'open-source'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
       cmd("contact", "contact", "chip-btn"),
+      cmd("quests", h("span", {}, "🏆 quests"), "chip-btn"),
     ),
   );
 }

@@ -8,6 +8,8 @@ Portfolio of **Navin Kumar**, built as a terminal you can actually use:
 - **⌘K command palette**: fuzzy search over commands, projects and actions
 - **ask in plain English**: a small rule-based agent shows its plan and tool calls, writes the SQL it needs, then answers
 - **query my résumé with SQL**: `sql SELECT name, year FROM projects ORDER BY year DESC`
+- **Vink**: a little rigged version of me standing on the command bar. His eyes follow your cursor, his glasses glow while he thinks, he reacts to what you do (thinks, types, shrugs, dances, naps), wanders around, and you can poke him or pick him up and drag him
+- **quests**: 13 achievements (two of them secret), XP and levels, toasts, and a confetti ending at 100%. `quests` shows progress
 - dark and light themes, a mobile layout, and a plain page at [`?plain`](https://navinbhagat322.github.io/?plain)
 
 Live: https://navinbhagat322.github.io
@@ -34,6 +36,9 @@ src/
   palette.ts    the ⌘K command palette
   agent.ts      the rule-based "agent" for English questions
   sql.ts        a tiny read-only SQL engine over the résumé tables
+  vink.ts       Vink: the SVG character, poses, speech bubble, confetti
+  game.ts       quests, XP and levels (saved in localStorage)
+  play.ts       wires Vink and quests to the shell; quests / vink commands
   plain.ts      the plain HTML version (?plain)
   theme.ts      dark / light
   ui.ts         DOM helpers and icons

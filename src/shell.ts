@@ -22,7 +22,7 @@ export interface Command {
   usage?: string;
   aliases?: string[];
   hidden?: boolean;
-  group?: "explore" | "tools" | "system";
+  group?: "explore" | "tools" | "play" | "system";
   /** Values offered after the command name. */
   complete?: () => string[];
   run: (ctx: Ctx) => void | Promise<void>;
@@ -83,6 +83,9 @@ export class Shell {
   examples: string[] = [];
   /** Called for input that matches no command. */
   fallback?: (ctx: Ctx, line: string) => void | Promise<void>;
+  /** Called as a command starts, and after it finishes. */
+  onStart?: (name: string, line: string) => void;
+  onRun?: (info: { name: string; line: string; ok: boolean; known: boolean }) => void;
 
   constructor(
     private readonly scroller: HTMLElement,
@@ -207,12 +210,13 @@ export class Shell {
     this.scrollToEnd();
 
     const ctx = this.ctx(block, line);
+    const name = line.split(/\s+/)[0].toLowerCase();
+    const cmd = this.get(name);
     this.busy = true;
     this.composer.classList.add("busy");
+    this.onStart?.(name, line);
     let ok = true;
     try {
-      const name = line.split(/\s+/)[0];
-      const cmd = this.get(name);
       if (cmd) await cmd.run(ctx);
       else if (this.fallback) await this.fallback(ctx, line);
       else ctx.error(`command not found: ${name}`);
@@ -226,6 +230,7 @@ export class Shell {
       this.composer.classList.remove("busy");
       this.settleScroll(block);
       this.focus();
+      this.onRun?.({ name, line, ok, known: !!cmd });
     }
   }
 

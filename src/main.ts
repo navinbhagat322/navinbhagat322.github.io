@@ -7,6 +7,7 @@ import { commands } from "./commands";
 import { links, profile, projects } from "./content";
 import { createPalette } from "./palette";
 import { renderPlain } from "./plain";
+import { setupPlay } from "./play";
 import { Shell } from "./shell";
 import { currentTheme, initTheme, onThemeChange, setTheme } from "./theme";
 import { h, icon } from "./ui";
@@ -43,7 +44,8 @@ async function startShell() {
     );
   };
 
-  const palette = createPalette(shell);
+  let onPaletteOpen = () => {};
+  const palette = createPalette(shell, () => onPaletteOpen());
 
   const themeBtn = h("button", { type: "button", class: "icon-btn", "aria-label": "Toggle theme", title: "Toggle theme" });
   const paintThemeBtn = () => themeBtn.replaceChildren(icon(currentTheme() === "dark" ? "sun" : "moon", 15));
@@ -80,12 +82,14 @@ async function startShell() {
   setInterval(tick, 30_000);
 
   const ternodbi = projects.find((p) => p.slug === "ternodbi")!;
+  const xpSlot = h("span", {});
   const statusbar = h(
     "footer",
     { class: "statusbar" },
     h("span", { class: "sb-item" }, icon("branch", 12), "main"),
-    h("button", { type: "button", class: "sb-item sb-link", "data-run": `projects ${ternodbi.slug}` }, h("span", { class: "pulse small" }), "shipping TernoDBI"),
+    h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": `projects ${ternodbi.slug}` }, h("span", { class: "pulse small" }), "shipping TernoDBI"),
     h("span", { class: "sb-spacer" }),
+    xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),
     h("span", { class: "sb-item sb-clock" }, clock),
   );
@@ -98,6 +102,10 @@ async function startShell() {
 
   const win = h("div", { class: "window" }, titlebar, scroller, quickbar, shell.composer, statusbar);
   app.append(h("div", { class: "glow", "aria-hidden": "true" }), win);
+
+  const play = setupPlay(shell, win, xpSlot);
+  shell.register(...play.commands);
+  onPaletteOpen = () => play.game.unlock("palette");
 
   // Any [data-run] element anywhere runs its command.
   document.addEventListener("click", (e) => {
