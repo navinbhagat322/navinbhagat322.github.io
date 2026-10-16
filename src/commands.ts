@@ -1,3 +1,4 @@
+import { activityView, loadActivity } from "./activity";
 import { ask } from "./agent";
 import { links, projects } from "./content";
 import type { Command } from "./shell";
@@ -82,6 +83,20 @@ export const commands: Command[] = [
     group: "explore",
     aliases: ["summary", "recruiter", "hire"],
     run: ({ add }) => void add(tldrView()),
+  },
+  {
+    name: "activity",
+    summary: "what I shipped this week, live from GitHub",
+    group: "explore",
+    aliases: ["shipped", "commits", "log"],
+    run: async ({ add, out }) => {
+      const a = await loadActivity();
+      if (!a) {
+        out(h("span", { class: "muted" }, "Couldn't load the activity feed right now. "), link(links.github, "See GitHub →"));
+        return;
+      }
+      add(activityView(a));
+    },
   },
   {
     name: "about",

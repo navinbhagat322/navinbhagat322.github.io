@@ -11,6 +11,7 @@ Portfolio of **Navin Kumar**, built as a terminal you can actually use:
 - **Vink**: a little rigged version of me standing on the command bar. His eyes follow your cursor, his glasses glow while he thinks, he reacts to what you do (thinks, types, shrugs, dances, naps), wanders around, and you can poke him or pick him up and drag him
 - **quests**: 13 achievements (two of them secret), XP and levels, one quiet toast at a time (Vink announces level-ups instead), and a confetti ending at 100%. `quests` shows progress
 - **recruiter fast path**: one button (or `tldr`, or [`?tldr`](https://navinbhagat322.github.io/?tldr)) shows a 30-second summary; Vink stays quiet while it's open
+- **live GitHub feed**: `activity` shows what I shipped this week (public commits only), the opening screen shows "last commit …", and Vink mentions the latest one
 - dark and light themes, a mobile layout, and a plain page at [`?plain`](https://navinbhagat322.github.io/?plain)
 
 Live: https://navinbhagat322.github.io
@@ -51,6 +52,9 @@ Useful URLs: `/?plain`, `/?cmd=projects`, `/?q=what+is+ternodbi`
 ## Deploy
 
 Pushing to `main` runs `.github/workflows/deploy.yml`, which builds and publishes to GitHub Pages.
+It also runs nightly, and before each build `npm run activity` (scripts/fetch-activity.mjs) pulls my latest
+public commits into `public/activity.json` (git-ignored), so the activity feed stays current on its own.
+Run `npm run activity` locally to refresh it during development.
 One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
 
 ---

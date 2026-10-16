@@ -1,5 +1,6 @@
 // Gamification glue: Vink reacts to what visitors do, quests unlock, XP grows.
 
+import { activity, loadActivity, notable, repoName } from "./activity";
 import { looksLikeQuestion } from "./agent";
 import { projects } from "./content";
 import { EXPLORE_COMMANDS, Game, levels, quests, type Quest } from "./game";
@@ -13,6 +14,7 @@ const HINTS: Record<string, () => Child[]> = {
   explorer: () => ["Start with ", cmd("projects"), ". The TernoDBI card is my favourite."],
   "deep-dive": () => ["Open a project up: ", cmd("projects ternodbi"), "."],
   query: () => ["You can query the résumé with real SQL: ", cmd("sql SHOW TABLES"), "."],
+  shipped: () => ["Curious what Navin's working on right now? ", cmd("activity"), " — straight from GitHub."],
   curious: () => ["Just type a question, like ", cmd("what is ternodbi?"), "."],
   palette: () => ["Press ⌘K (or Ctrl K). Everything's in there."],
   hacker: () => ["There are files in here. Try ", cmd("ls"), "."],
@@ -30,6 +32,7 @@ const FIRST_TIME: Record<string, Child[]> = {
   skills: ["Python and SQL are basically my first languages."],
   contact: ["Email's fastest. He actually replies."],
   sql: ["Real SQL, parsed and run right here in your browser."],
+  activity: ["All public, pulled straight from GitHub every night. No manual updates."],
   ls: ["Go on, ", cmd("cat about.md"), "."],
 };
 
@@ -188,6 +191,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     if (EXPLORE_COMMANDS.includes(canonical)) game.step("explorer", canonical);
     if (canonical === "projects" && args[0] && projects.some((p) => p.slug === args[0].toLowerCase())) game.unlock("deep-dive");
     if (canonical === "sql" && args.length) game.unlock("query");
+    if (canonical === "activity") game.unlock("shipped");
     if (canonical === "cat" && args.length) game.unlock("hacker");
     if ((canonical === "ask" && args.length) || question) game.step("curious");
     if (canonical === "sudo" && args.join(" ").toLowerCase() === "hire navin") game.unlock("root");
@@ -237,6 +241,38 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
       void vink.say(["Hi! I'm ", h("strong", {}, "Vink"), ", Navin's illustrated twin. Look around and you'll unlock quests — ", cmd("quests"), " shows them all."], 7000);
     }
   }, 900);
+
+  // ---------- shipping news: once per visit, when Vink has nothing else to say ----------
+  void loadActivity().then((a) => {
+    if (!a || !a.week.commits) return;
+    let told = false;
+    try {
+      told = sessionStorage.getItem("vink-news") === "1";
+    } catch {
+      /* no storage: tell them anyway */
+    }
+    if (told) return;
+    window.setTimeout(() => {
+      const data = activity();
+      const c = data && notable(data);
+      if (!data || !c || vink.speaking || vink.pose !== "idle" || game.has("shipped")) return;
+      try {
+        sessionStorage.setItem("vink-news", "1");
+      } catch {
+        /* fine */
+      }
+      vink.setPose("point", 3500);
+      void vink.say(
+        [
+          "Fresh from GitHub: Navin pushed ",
+          h("strong", {}, `${data.week.commits} commit${data.week.commits === 1 ? "" : "s"}`),
+          ` to ${data.week.repos.map(repoName).join(", ")} this week. Latest: “${c.message.length > 70 ? c.message.slice(0, 68) + "…" : c.message}” `,
+          cmd("activity"),
+        ],
+        8000,
+      );
+    }, 12_000);
+  });
 
   return { game, vink, commands: playCommands(game, vink, windowEl) };
 }

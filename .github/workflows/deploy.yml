@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Rebuild nightly so the "what I shipped" feed picks up new commits.
+  schedule:
+    - cron: "30 20 * * *" # 02:00 IST
   workflow_dispatch:
 
 permissions:
@@ -24,6 +27,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Fetch latest public commits
+        run: npm run activity
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Navin Bhagat's portfolio — an agent shell you can talk to or query with SQL.",
+  "description": "Navin Bhagat's portfolio \u2014 an agent shell you can talk to or query with SQL.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "activity": "node scripts/fetch-activity.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

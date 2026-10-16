@@ -2,6 +2,7 @@ import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "./style.css";
 
+import { fillPlaceholders, loadActivity } from "./activity";
 import { ask, looksLikeQuestion } from "./agent";
 import { commands } from "./commands";
 import { links, profile, projects } from "./content";
@@ -130,8 +131,11 @@ async function startShell() {
 
   shell.addToFeed(welcome());
   shell.focus();
+  const activityReady = loadActivity().then(() => fillPlaceholders());
 
   // Deep links: /?cmd=projects  or  /?q=what+is+ternodbi
+  // Give the activity feed a moment so the summary can include "last shipped".
+  await Promise.race([activityReady, new Promise((r) => setTimeout(r, 1500))]);
   const deep = params.has("tldr") ? "tldr" : (params.get("cmd") ?? params.get("q"));
   if (deep) await shell.type(params.has("q") && !looksLikeQuestion(deep) ? `ask ${deep}` : deep);
 }

@@ -3,6 +3,7 @@
 import { experience, links, profile, projects, recruiter, skills, stats, type Project } from "./content";
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
+import { lastShipped } from "./activity";
 import { vinkSVG } from "./vink";
 
 export function vinkAvatar(): HTMLElement {
@@ -246,6 +247,7 @@ export function welcome(): HTMLElement {
       h("span", { class: "muted" }, "currently building"),
       cmd(`projects ${featured.slug}`, featured.name, "cmd-link strong"),
       h("span", { class: "muted" }, "— the data layer between AI agents and your databases"),
+      h("button", { type: "button", class: "hero-last", "data-activity": "last", "data-run": "activity", hidden: true }),
     ),
     h(
       "div",
@@ -289,7 +291,12 @@ export function tldrView(): HTMLElement {
         ),
       ),
     ),
-    h("dl", { class: "tldr-facts" }, ...recruiter.facts.flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v)])),
+    h(
+      "dl",
+      { class: "tldr-facts" },
+      ...recruiter.facts.flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v)]),
+      ...(lastShipped() ? [h("dt", {}, "shipping"), h("dd", {}, cmd("activity", lastShipped()!))] : []),
+    ),
     h(
       "div",
       { class: "tldr-actions" },

@@ -20,6 +20,7 @@ export const quests: Quest[] = [
   { id: "explorer", icon: "🧭", title: "Explorer", desc: "Open about, projects, experience, skills and contact", xp: 50, goal: EXPLORE_COMMANDS.length },
   { id: "deep-dive", icon: "🔍", title: "Deep dive", desc: "Open a project's details", xp: 20 },
   { id: "query", icon: "🗄️", title: "Query wizard", desc: "Run a SQL query against the résumé", xp: 30 },
+  { id: "shipped", icon: "📦", title: "Fresh commits", desc: "Check what Navin shipped this week", xp: 10 },
   { id: "curious", icon: "💬", title: "Curious mind", desc: "Ask Vink 3 questions in plain English", xp: 30, goal: 3 },
   { id: "palette", icon: "⌘", title: "Power user", desc: "Open the ⌘K command palette", xp: 20 },
   { id: "hacker", icon: "📂", title: "Poking around", desc: "Read a file with cat", xp: 15 },
