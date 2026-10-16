@@ -4,7 +4,7 @@ import { experience, focusAreas, links, profile, recruiter, skills, type Project
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
 import { lastShipped } from "./activity";
-import { systemDiagram } from "./system";
+import { headline } from "./headline";
 import { vinkSVG } from "./vink";
 
 export function vinkAvatar(): HTMLElement {
@@ -240,13 +240,14 @@ export function welcome(): HTMLElement {
         ),
       ),
     ),
-    h("p", { class: "hero-tagline" }, profile.tagline),
+    headline(),
+    h("p", { class: "hero-sub" }, `…and everything they need to work on real company data, in production at ${profile.project}.`),
     h(
       "div",
       { class: "hero-hurry" },
       cmd("tldr", h("span", {}, "⚡ In a hurry? Read the 30-second summary"), "hurry-btn"),
+      cmd("stack", h("span", {}, icon("branch", 14), "See how it all fits together"), "ghost-btn"),
     ),
-    systemDiagram(),
     h(
       "div",
       { class: "hero-proof" },
@@ -315,6 +316,8 @@ export function tldrView(): HTMLElement {
       "p",
       { class: "tldr-more" },
       "Want the detail? ",
+      cmd("stack"),
+      " · ",
       cmd("projects"),
       " · ",
       cmd("experience"),

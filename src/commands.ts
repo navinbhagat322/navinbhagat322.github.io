@@ -3,6 +3,7 @@ import { ask } from "./agent";
 import { links, projects } from "./content";
 import type { Command } from "./shell";
 import { query, tables } from "./sql";
+import { systemDiagram } from "./system";
 import { setTheme, themes } from "./theme";
 import { cmd, h, link } from "./ui";
 import { aboutView, contactView, projectDetail, projectGrid, skillsView, sqlTable, timeline, tldrView } from "./views";
@@ -85,6 +86,13 @@ export const commands: Command[] = [
     run: ({ add }) => void add(tldrView()),
   },
   {
+    name: "stack",
+    summary: "how everything I build fits together, animated",
+    group: "explore",
+    aliases: ["system", "architecture", "how"],
+    run: ({ add }) => void add(systemDiagram()),
+  },
+  {
     name: "activity",
     summary: "what I shipped this week, live from GitHub",
     group: "explore",
@@ -149,7 +157,7 @@ export const commands: Command[] = [
     name: "skills",
     summary: "languages, ML and infrastructure",
     group: "explore",
-    aliases: ["stack"],
+    aliases: ["tech"],
     run: ({ add }) => void add(skillsView()),
   },
   {

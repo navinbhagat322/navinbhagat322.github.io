@@ -34,6 +34,7 @@ const FIRST_TIME: Record<string, Child[]> = {
   contact: ["Email's fastest. He actually replies."],
   sql: ["Real SQL, parsed and run right here in your browser."],
   activity: ["All public, pulled straight from GitHub every night. No manual updates."],
+  stack: ["That's the whole thing, end to end. Click any part to open it."],
   ls: ["Go on, ", cmd("cat about.md"), "."],
 };
 

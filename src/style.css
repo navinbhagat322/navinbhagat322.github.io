@@ -527,8 +527,8 @@ code {
 .avatar {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   flex: none;
   border-radius: 15px;
   background: linear-gradient(135deg, #22d3ee, #6366f1 55%, #a78bfa);
@@ -540,8 +540,8 @@ code {
 
 .hero h1 {
   margin: 0;
-  font: 650 30px/1.15 var(--sans);
-  letter-spacing: -0.03em;
+  font: 600 19px/1.2 var(--sans);
+  letter-spacing: -0.015em;
 }
 
 .hero-role {
@@ -555,14 +555,6 @@ code {
   color: var(--faint);
 }
 
-.hero-tagline {
-  max-width: 62ch;
-  margin: 20px 0 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--fg-soft);
-  text-wrap: pretty;
-}
 
 /* "what I build" as a quiet list (about + plain pages) */
 .focus {
@@ -923,9 +915,105 @@ button.sys-node:hover {
   margin-right: 4px;
 }
 
+/* the opening line: "I build ___" */
+.headline {
+  margin: 26px 0 0;
+  font: 650 40px/1.12 var(--sans);
+  letter-spacing: -0.035em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.rot {
+  display: inline-flex;
+  align-items: baseline;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.rot-word {
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 8px;
+  text-decoration-thickness: 2px;
+  transition: text-decoration-color 0.2s;
+}
+
+.rot:hover .rot-word {
+  text-decoration-color: color-mix(in srgb, var(--violet) 60%, transparent);
+}
+
+.rot-caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  margin-left: 4px;
+  border-radius: 2px;
+  background: var(--violet);
+  transform: translateY(0.1em);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+.rot.typing .rot-caret {
+  animation: none;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.hero-sub {
+  max-width: 60ch;
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg-soft);
+  text-wrap: pretty;
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--fg-soft);
+  font: 500 13.5px var(--sans);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.ghost-btn > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ghost-btn:hover {
+  border-color: var(--line-strong);
+  background: var(--card);
+  color: var(--fg);
+}
+
 /* recruiter fast path */
 .hero-hurry {
-  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
 }
 
 .hurry-btn {
@@ -3173,13 +3261,15 @@ body.plain-mode #app {
     padding: 28px 16px 24px;
   }
 
-  .hero h1 {
-    font-size: 26px;
+  .headline {
+    margin-top: 20px;
+    font-size: 30px;
   }
 
-  .hero-tagline {
+  .hero-sub {
     font-size: 15px;
   }
+
 
   .focus {
     grid-template-columns: 1fr;
