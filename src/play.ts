@@ -11,8 +11,8 @@ import { Vink, vinkSVG, type Pose } from "./vink";
 
 const HINTS: Record<string, () => Child[]> = {
   hello: () => ["Type ", cmd("help"), " to see what this terminal can do."],
-  explorer: () => ["Start with ", cmd("projects"), ". The TernoDBI card is my favourite."],
-  "deep-dive": () => ["Open a project up: ", cmd("projects ternodbi"), "."],
+  explorer: () => ["Start with ", cmd("projects"), ". The agents card is my favourite."],
+  "deep-dive": () => ["Open a project up: ", cmd("projects agents"), "."],
   query: () => ["You can query the résumé with real SQL: ", cmd("sql SHOW TABLES"), "."],
   shipped: () => ["Curious what Navin's working on right now? ", cmd("activity"), " — straight from GitHub."],
   curious: () => ["Just type a question, like ", cmd("what is ternodbi?"), "."],
@@ -28,7 +28,7 @@ const HINTS: Record<string, () => Child[]> = {
 const FIRST_TIME: Record<string, Child[]> = {
   help: ["Pro tip: Tab completes, and → accepts my grey suggestions."],
   about: ["That's him. I'm the illustrated version — same hair, fewer meetings."],
-  projects: ["TernoDBI is the big one. Hit details on it."],
+  projects: ["The agents and the eval framework are the big ones. Hit details on them."],
   experience: ["From steel at Tata to SQL for AI agents. Quite the arc."],
   skills: ["Python and SQL are basically my first languages."],
   contact: ["Email's fastest. He actually replies."],

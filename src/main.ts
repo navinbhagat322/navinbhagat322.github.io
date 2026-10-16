@@ -5,7 +5,7 @@ import "./style.css";
 import { fillPlaceholders, loadActivity } from "./activity";
 import { ask, looksLikeQuestion } from "./agent";
 import { commands } from "./commands";
-import { links, profile, projects } from "./content";
+import { links, profile } from "./content";
 import { NeuralBackground } from "./neural";
 import { createPalette } from "./palette";
 import { renderPlain } from "./plain";
@@ -83,13 +83,12 @@ async function startShell() {
   tick();
   setInterval(tick, 30_000);
 
-  const ternodbi = projects.find((p) => p.slug === "ternodbi")!;
   const xpSlot = h("span", {});
   const statusbar = h(
     "footer",
     { class: "statusbar" },
     h("span", { class: "sb-item" }, icon("branch", 12), "main"),
-    h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": `projects ${ternodbi.slug}` }, h("span", { class: "pulse small" }), "shipping TernoDBI"),
+    h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "projects" }, h("span", { class: "pulse small" }), "building Terno AI"),
     h("span", { class: "sb-spacer" }),
     xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),

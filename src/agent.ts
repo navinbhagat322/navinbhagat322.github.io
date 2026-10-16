@@ -24,7 +24,7 @@ const intents: Intent[] = [
     keywords: /\b(ternodbi|dbi|mcp|connector|connectors|data layer|oauth)\b/gi,
     answer: () => [
       h("strong", {}, "TernoDBI"),
-      ` is the open-source database intelligence layer at TernoAI, and Navin is its top contributor (280+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
+      ` is one part of his work at Terno AI: an open-source MCP server (on PyPI) where Navin is the top contributor (280+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
       cmd("projects ternodbi", "Full details →"),
     ],
   },
@@ -39,14 +39,16 @@ const intents: Intent[] = [
   },
   {
     name: "projects",
-    keywords: /\b(projects?|built|build|made|portfolio|open.?source|github|side)\b/gi,
+    keywords: /\b(projects?|built|build|made|portfolio|open.?source|github|side|agents?|evals?|rag|memory)\b/gi,
     sql: "SELECT name, kind, year FROM projects ORDER BY year DESC LIMIT 5",
     answer: () => [
-      "His main work is ",
-      h("strong", {}, "TernoDBI"),
-      " and ",
-      h("strong", {}, "SQLShield"),
-      ", open-source infrastructure for letting AI agents query real databases safely. On the side: an air-gapped QR file transfer kit, a PDF RAG chatbot, and a few ML projects. ",
+      "At Terno AI he builds ",
+      h("strong", {}, "AI agents"),
+      " (LangChain, CrewAI, AutoGen, OpenAI SDK and custom), the ",
+      h("strong", {}, "evaluation framework"),
+      " that tests them, a self-improving ",
+      h("strong", {}, "RAG memory"),
+      ", and the MCP layer — including the open-source TernoDBI. Earlier: the PyQuest app and a financial RAG assistant. ",
       cmd("projects", "See all →"),
     ],
   },
@@ -55,7 +57,7 @@ const intents: Intent[] = [
     keywords: /\b(experience|jobs?|work(ed|s|ing)?|intern(ship)?|compan(y|ies)|career|employ|currently|now)\b/gi,
     sql: "SELECT org, title, kind FROM experience WHERE kind != 'education'",
     answer: () => [
-      `He's an ${profile.role} at ${profile.company}. Before that he interned at CloudxLab (data science & ML) and Tata Steel (product R&D). `,
+      `He's an ${profile.role} at ${profile.company}, building ${profile.project} — agents, evals, RAG memory and MCP. Before that: an SDE internship at CloudxLab (the PyQuest app), an AI internship at Scientific Investing, and R&D at Tata Steel. `,
       cmd("experience", "Timeline →"),
     ],
   },
@@ -65,7 +67,7 @@ const intents: Intent[] = [
     sql: "SELECT area, name FROM skills WHERE area = 'ai / ml'",
     showTable: false,
     answer: () => [
-      "Python and SQL every day; Django for backends; LLM agents, MCP, RAG and text-to-SQL on the AI side; Postgres, MySQL, Snowflake and BigQuery for data; AWS, Docker and Nginx to ship it. ",
+      "Python (expert) and SQL every day; LangChain, CrewAI, AutoGen, MCP, RAG and text-to-SQL for agents; PyTorch, Hugging Face and scikit-learn for ML; Django, Celery, React and Flutter for apps; Docker and AWS to ship it. ",
       cmd("skills", "Full list →"),
     ],
   },
@@ -100,7 +102,7 @@ const intents: Intent[] = [
   {
     name: "about",
     keywords: /\b(who|about|yourself|navin|introduce|summary|tl;?dr|focus|interests?)\b/gi,
-    answer: () => [`${profile.name} — ${profile.role} at ${profile.company}. ${profile.tagline} `, cmd("about", "More →")],
+    answer: () => [`${profile.name} — ${profile.role} at ${profile.company} (${profile.project}). ${profile.tagline} `, cmd("about", "More →")],
   },
 ];
 

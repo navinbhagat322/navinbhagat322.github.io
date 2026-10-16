@@ -2,7 +2,7 @@
 
 import { links, profile, projects } from "./content";
 import { h, icon, link } from "./ui";
-import { contactView, skillsView, statRow, timeline } from "./views";
+import { contactView, focusRow, skillsView, timeline } from "./views";
 import { vinkSVG } from "./vink";
 
 function vinkHead(): HTMLElement {
@@ -23,7 +23,7 @@ export function renderPlain(root: HTMLElement) {
         { class: "plain-head" },
         vinkHead(),
         h("h1", {}, profile.name),
-        h("p", { class: "plain-role" }, `${profile.role} at ${profile.company} · ${profile.education}`),
+        h("p", { class: "plain-role" }, `${profile.role} at ${profile.company} (${profile.project}) · ${profile.education}`),
         h("p", { class: "plain-tagline" }, profile.tagline),
         h(
           "div",
@@ -34,7 +34,7 @@ export function renderPlain(root: HTMLElement) {
           h("a", { href: "./", class: "btn ghost" }, "❯ open the terminal"),
         ),
       ),
-      statRow(),
+      focusRow(),
       h("h2", {}, "Projects"),
       h(
         "div",

@@ -1,6 +1,6 @@
 // Rich output rendered inside command blocks.
 
-import { experience, links, profile, projects, recruiter, skills, stats, type Project } from "./content";
+import { experience, focusAreas, links, profile, recruiter, skills, type Project } from "./content";
 import type { Result } from "./sql";
 import { cmd, copy, h, icon, link } from "./ui";
 import { lastShipped } from "./activity";
@@ -13,7 +13,7 @@ export function vinkAvatar(): HTMLElement {
 }
 
 const kindLabel: Record<Project["kind"], string> = {
-  work: "TernoAI",
+  work: "work",
   "open-source": "open source",
   personal: "personal",
 };
@@ -61,12 +61,19 @@ export function projectDetail(p: Project): HTMLElement {
   );
 }
 
-export function statRow(): HTMLElement {
+/** What I build: four short capability cards. */
+export function focusRow(): HTMLElement {
   return h(
     "div",
-    { class: "stats" },
-    ...stats.map((s) =>
-      h("div", { class: "stat" }, h("strong", {}, s.value), h("span", {}, s.label), h("small", {}, s.hint)),
+    { class: "focus" },
+    ...focusAreas.map((f) =>
+      h(
+        "div",
+        { class: "focus-item" },
+        h("span", { class: "focus-icon" }, icon(f.icon, 15)),
+        h("strong", {}, f.title),
+        h("span", {}, f.body),
+      ),
     ),
   );
 }
@@ -78,13 +85,13 @@ export function aboutView(): HTMLElement {
     h(
       "div",
       { class: "about-text" },
-      h("p", { class: "lede" }, `I'm ${profile.name}, an ${profile.role} at ${profile.company}. ${profile.tagline}`),
+      h("p", { class: "lede" }, `I'm ${profile.name}, an ${profile.role} at ${profile.company}, building ${profile.project}. ${profile.tagline}`),
       h(
         "p",
         {},
-        "Most of my time goes into ",
+        "Day to day that means building agents (LangChain, CrewAI, AutoGen, the OpenAI SDK and custom ones), the evaluation framework that keeps them honest, their RAG memory, and the MCP layer they use to reach databases — including ",
         link("https://github.com/terno-ai/ternodbi", "TernoDBI"),
-        ", where I'm the top contributor: the MCP server, OAuth, connectors, multi-tenancy and the query engine. Before that I worked on ML at CloudxLab and Tata Steel, and studied at IIT Jodhpur.",
+        ", which I published on PyPI. Before that I shipped CloudxLab's PyQuest app, built a financial RAG assistant at Scientific Investing, did materials R&D at Tata Steel, and studied at IIT Jodhpur.",
       ),
       h("p", { class: "muted" }, `Off-screen: ${profile.offline.join(", ")}.`),
     ),
@@ -92,7 +99,7 @@ export function aboutView(): HTMLElement {
       "dl",
       { class: "facts" },
       h("dt", {}, "role"),
-      h("dd", {}, `${profile.role} @ ${profile.company}`),
+      h("dd", {}, `${profile.role} @ ${profile.company} · ${profile.project}`),
       h("dt", {}, "focus"),
       h("dd", {}, profile.focus.join(" · ")),
       h("dt", {}, "education"),
@@ -211,7 +218,6 @@ export function sqlTable({ columns, rows }: Result, ms: number): HTMLElement {
 }
 
 export function welcome(): HTMLElement {
-  const featured = projects.find((p) => p.featured)!;
   return h(
     "section",
     { class: "hero" },
@@ -229,7 +235,7 @@ export function welcome(): HTMLElement {
           `${profile.role} at `,
           h("span", { class: "accent" }, profile.company),
           h("span", { class: "dot-sep" }, "·"),
-          profile.education,
+          `building ${profile.project}`,
         ),
       ),
     ),
@@ -239,14 +245,13 @@ export function welcome(): HTMLElement {
       { class: "hero-hurry" },
       cmd("tldr", h("span", {}, "⚡ In a hurry? Read the 30-second summary"), "hurry-btn"),
     ),
-    statRow(),
+    focusRow(),
     h(
       "div",
       { class: "hero-now" },
       h("span", { class: "pulse", "aria-hidden": "true" }),
-      h("span", { class: "muted" }, "currently building"),
-      cmd(`projects ${featured.slug}`, featured.name, "cmd-link strong"),
-      h("span", { class: "muted" }, "— the data layer between AI agents and your databases"),
+      h("span", { class: "muted" }, "shipping daily at"),
+      h("span", {}, `${profile.company} · ${profile.project}`),
       h("button", { type: "button", class: "hero-last", "data-activity": "last", "data-run": "activity", hidden: true }),
     ),
     h(
@@ -256,7 +261,7 @@ export function welcome(): HTMLElement {
       cmd("projects", "projects", "chip-btn"),
       cmd("about", "about", "chip-btn"),
       cmd("ask what does navin work on?", h("span", {}, icon("sparkle", 13), "ask a question"), "chip-btn"),
-      cmd("sql SELECT name, year FROM projects WHERE kind = 'open-source'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
+      cmd("sql SELECT name, year FROM projects WHERE kind = 'work'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
       cmd("contact", "contact", "chip-btn"),
       cmd("quests", h("span", {}, "🏆 quests"), "chip-btn"),
     ),
