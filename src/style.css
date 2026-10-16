@@ -163,26 +163,22 @@ code {
 .glow {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(700px 500px at 12% -5%, var(--glow-a), transparent 70%),
     radial-gradient(800px 600px at 95% 105%, var(--glow-b), transparent 70%);
 }
 
-.glow::after {
-  content: "";
+.neural {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 75%);
+  display: block;
 }
 
 .window {
   position: relative;
+  z-index: 1;
   width: min(1120px, 100%);
   height: min(880px, calc(100dvh - 56px));
   display: grid;
@@ -2853,6 +2849,10 @@ body.plain-mode #app {
     border-radius: 0;
     box-shadow: none;
     animation: none;
+    /* Full-screen on phones, so let the neural background show through faintly. */
+    background: color-mix(in srgb, var(--window) 74%, transparent);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
   }
 
   .titlebar {

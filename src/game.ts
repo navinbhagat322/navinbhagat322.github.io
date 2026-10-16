@@ -27,6 +27,7 @@ export const quests: Quest[] = [
   { id: "theme", icon: "🌗", title: "Other side", desc: "Switch the theme", xp: 10 },
   { id: "poke", icon: "👉", title: "That tickles", desc: "Poke Vink 5 times", xp: 15, goal: 5 },
   { id: "lift", icon: "🫳", title: "Personal space", desc: "Pick Vink up and move him", xp: 15 },
+  { id: "spark", icon: "🧠", title: "Neuroscientist", desc: "Fire 10 neurons in the background network", hint: "The background isn't just decoration…", xp: 15, goal: 10, secret: true },
   { id: "talk", icon: "✉️", title: "Let's talk", desc: "Open Navin's email or LinkedIn", xp: 40 },
   { id: "root", icon: "🔑", title: "Root access", desc: "Hired Navin with sudo", hint: "Some commands need superuser rights…", xp: 40, secret: true },
   { id: "oops", icon: "🫠", title: "It happens", desc: "Ran a command that doesn't exist", hint: "Make a typo. Seriously.", xp: 5, secret: true },

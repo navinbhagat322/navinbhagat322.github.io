@@ -12,6 +12,7 @@ Portfolio of **Navin Kumar**, built as a terminal you can actually use:
 - **quests**: 13 achievements (two of them secret), XP and levels, one quiet toast at a time (Vink announces level-ups instead), and a confetti ending at 100%. `quests` shows progress
 - **recruiter fast path**: one button (or `tldr`, or [`?tldr`](https://navinbhagat322.github.io/?tldr)) shows a 30-second summary; Vink stays quiet while it's open
 - **live GitHub feed**: `activity` shows what I shipped this week (public commits only), the opening screen shows "last commit …", and Vink mentions the latest one
+- **neural background**: a quiet neural network behind everything. Neurons fire on their own and signals cascade along connections; the cursor acts as a neuron, clicking empty space fires a spike, and it gets busier while Vink thinks
 - dark and light themes, a mobile layout, and a plain page at [`?plain`](https://navinbhagat322.github.io/?plain)
 
 Live: https://navinbhagat322.github.io
@@ -44,6 +45,7 @@ src/
   plain.ts      the plain HTML version (?plain)
   theme.ts      dark / light
   ui.ts         DOM helpers and icons
+  neural.ts     the neural-network background (canvas)
   main.ts       window chrome and wiring
 ```
 

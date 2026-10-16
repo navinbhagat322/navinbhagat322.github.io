@@ -6,6 +6,7 @@ import { fillPlaceholders, loadActivity } from "./activity";
 import { ask, looksLikeQuestion } from "./agent";
 import { commands } from "./commands";
 import { links, profile, projects } from "./content";
+import { NeuralBackground } from "./neural";
 import { createPalette } from "./palette";
 import { renderPlain } from "./plain";
 import { setupPlay } from "./play";
@@ -102,11 +103,28 @@ async function startShell() {
   );
 
   const win = h("div", { class: "window" }, titlebar, scroller, quickbar, shell.composer, statusbar);
-  app.append(h("div", { class: "glow", "aria-hidden": "true" }), win);
+  const glow = h("div", { class: "glow", "aria-hidden": "true" });
+  app.append(glow, win);
+  const neural = new NeuralBackground(glow);
 
   const play = setupPlay(shell, win, xpSlot);
   shell.register(...play.commands);
   onPaletteOpen = () => play.game.unlock("palette");
+
+  // The background network reacts: click empty space to fire a spike, and it
+  // gets busier while Vink is thinking about a question.
+  neural.onSpike = () => play.game.step("spark");
+  document.addEventListener("pointerdown", (e) => {
+    const t = e.target as HTMLElement;
+    const empty = t === app || t === document.body || t === document.documentElement || t.classList.contains("viewport") || t.classList.contains("feed") || t.classList.contains("hero");
+    if (empty && e.button === 0) neural.spike(e.clientX, e.clientY);
+  });
+  const onStart = shell.onStart;
+  shell.onStart = (name, line) => {
+    onStart?.(name, line);
+    if (name === "ask" || (!shell.get(name) && looksLikeQuestion(line))) neural.think(5);
+    else if (name === "sql") neural.think(2);
+  };
 
   // Any [data-run] element anywhere runs its command.
   document.addEventListener("click", (e) => {

@@ -21,6 +21,7 @@ const HINTS: Record<string, () => Child[]> = {
   theme: () => ["Too dark? Too bright? ", cmd("theme"), " flips it."],
   poke: () => ["You can poke me, you know. I don't bite."],
   lift: () => ["Fun fact: you can pick me up and drag me along the bar."],
+  spark: () => ["See the dots behind everything? That's a neural network. Click it."],
   talk: () => ["Seen enough? ", cmd("contact"), " is where the good stuff happens."],
 };
 
