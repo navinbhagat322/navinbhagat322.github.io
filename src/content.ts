@@ -8,7 +8,7 @@ export const site = {
 export const profile = {
   name: "Navin Kumar",
   handle: "navin",
-  host: "terno",
+  host: "home",
   role: "AI Software Engineer",
   company: "CloudxLab",
   project: "Terno AI",
