@@ -232,7 +232,7 @@ export const experience: Role[] = [
   },
   {
     org: "IIT Jodhpur",
-    title: "B.Tech, Material Science Engineering",
+    title: "B.Tech",
     kind: "education",
     period: "2021 – 2025",
     points: ["CGPA 8.15 · SGPAs of 9.61 and 9.05 in the final semesters"],
