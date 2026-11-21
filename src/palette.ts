@@ -68,6 +68,7 @@ export function createPalette(shell: Shell, onOpen?: () => void) {
       run: () => void setTheme(currentTheme() === "dark" ? "light" : "dark"),
     },
     { title: "Open GitHub", hint: "navinbhagat322", section: "Links", icon: "github", run: () => window.open(links.github, "_blank", "noopener") },
+    { title: "Open PyPI", hint: "3 packages", section: "Links", icon: "box", run: () => window.open(links.pypi, "_blank", "noopener") },
     { title: "Open LinkedIn", hint: "in/navin322", section: "Links", icon: "linkedin", run: () => window.open(links.linkedin, "_blank", "noopener") },
     { title: "Plain page", hint: "no typing, just reading", section: "Links", icon: "arrow", run: () => (location.search = "?plain") },
   ];

@@ -1,10 +1,9 @@
 // Rich output rendered inside command blocks.
 
-import { experience, focusAreas, links, profile, recruiter, skills, type Project } from "./content";
-import type { Result } from "./sql";
-import { cmd, copy, h, icon, link } from "./ui";
+import { experience, focusAreas, links, profile, projects, recruiter, skills, type Project } from "./content";
+import { cmd, copy, h, icon, link, type Child } from "./ui";
 import { lastShipped } from "./activity";
-import { headline } from "./headline";
+import { query, tables, type Result } from "./sql";
 import { vinkSVG } from "./vink";
 
 export function vinkAvatar(): HTMLElement {
@@ -92,7 +91,7 @@ export function aboutView(): HTMLElement {
         {},
         "Day to day that means building agents (LangChain, CrewAI, AutoGen, the OpenAI SDK and custom ones), the evaluation framework that keeps them honest, their RAG memory, and the MCP layer they use to reach databases — including ",
         link("https://github.com/terno-ai/ternodbi", "TernoDBI"),
-        ", which I published on PyPI. Before that I shipped CloudxLab's PyQuest app, built a financial RAG assistant at Scientific Investing, did materials R&D at Tata Steel, and studied at IIT Jodhpur.",
+        ", which I published on PyPI, and contributed to the open-source Terno agent. On the side I built Vink, a YouTube-to-notes tool on PyPI. Before that I shipped CloudxLab's PyQuest app, built a financial RAG assistant at Scientific Investing, did materials R&D at Tata Steel, and studied at IIT Jodhpur.",
       ),
       h("p", { class: "muted" }, `Off-screen: ${profile.offline.join(", ")}.`),
     ),
@@ -168,6 +167,7 @@ export function contactView(): HTMLElement {
     ["mail", "email", links.email, `mailto:${links.email}`],
     ["linkedin", "linkedin", "in/navin322", links.linkedin],
     ["github", "github", "navinbhagat322", links.github],
+    ["box", "pypi", "3 packages", links.pypi],
     ["youtube", "youtube", "@Navin_bhagat", links.youtube],
     ["instagram", "instagram", "navin.bhagat_", links.instagram],
   ];
@@ -219,53 +219,90 @@ export function sqlTable({ columns, rows }: Result, ms: number): HTMLElement {
 }
 
 export function welcome(): HTMLElement {
+  const sql = "SELECT * FROM navin;";
+  const result = query(sql);
   return h(
     "section",
     { class: "hero" },
     h(
       "div",
-      { class: "hero-id" },
-      vinkAvatar(),
+      { class: "hero-main" },
       h(
         "div",
-        {},
-        h("h1", {}, profile.name),
+        { class: "hero-id" },
+        vinkAvatar(),
         h(
-          "p",
-          { class: "hero-role" },
-          `${profile.role} at `,
-          h("span", { class: "accent" }, profile.company),
-          h("span", { class: "dot-sep" }, "·"),
-          `building ${profile.project}`,
+          "div",
+          {},
+          h("h1", {}, profile.name),
+          h("p", { class: "hero-role" }, `${profile.role} · ${profile.company}`),
         ),
       ),
+      h("h2", { class: "hero-claim" }, "I build AI agents and the systems that make them ", h("span", { class: "accent" }, "reliable"), "."),
+      h(
+        "div",
+        { class: "hero-query" },
+        h(
+          "div",
+          { class: "hq-line" },
+          h("span", { class: "hq-prompt", "aria-hidden": "true" }, ">"),
+          h("code", {}, sql),
+        ),
+        h(
+          "table",
+          { class: "hq-table" },
+          h(
+            "tbody",
+            {},
+            ...result.rows.map((r, i) => h("tr", { style: `--i:${i}` }, h("th", { scope: "row" }, String(r.field)), h("td", {}, String(r.value)))),
+          ),
+        ),
+      ),
+      h(
+        "div",
+        { class: "hero-hurry" },
+        cmd("tldr", h("span", {}, h("em", { class: "cta-tag" }, "TL;DR"), "Read the 30-second summary"), "cta cta-main"),
+        link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email"), "cta"),
+        link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "cta"),
+      ),
     ),
-    headline(),
-    h("p", { class: "hero-sub" }, `…and everything they need to work on real company data, in production at ${profile.project}.`),
+    exploreIndex(),
+  );
+}
+
+/** Every section of the site, one click away. Each row shows the command it runs. */
+function exploreIndex(): HTMLElement {
+  const rows: [string, string, Child, string][] = [
+    ["box", "Projects", `${projects.length} things I've built · agents, evals, TernoDBI`, "projects"],
+    ["branch", "Experience", "CloudxLab · Scientific Investing · Tata Steel", "experience"],
+    ["command", "Skills", `${skills.length} tools · Python, SQL, LangChain, MCP`, "skills"],
+    ["network", "How it fits", "the whole system, end to end", "stack"],
+    ["github", "Shipping", h("span", { "data-activity": "count" }, "public commits, straight from GitHub"), "activity"],
+    ["chat", "Ask me anything", "answers in plain English", "ask what does navin work on?"],
+    ["database", "Query with SQL", `${Object.keys(tables).length} tables of me · try SHOW TABLES`, "sql SHOW TABLES"],
+    ["mail", "Contact", "email · LinkedIn · GitHub · PyPI", "contact"],
+    ["trophy", "Quests", "play along and level up", "quests"],
+  ];
+  return h(
+    "nav",
+    { class: "explore", "aria-label": "Explore the site" },
+    h("div", { class: "explore-head" }, h("span", {}, "explore"), h("span", {}, "click, or type the command")),
     h(
-      "div",
-      { class: "hero-hurry" },
-      cmd("tldr", h("span", {}, icon("zap", 15), "Read the 30-second summary", h("em", { class: "cta-tag" }, "TL;DR")), "cta cta-main"),
-      cmd("stack", h("span", {}, icon("branch", 15), "See how it all fits together"), "cta"),
-    ),
-    h(
-      "div",
-      { class: "hero-proof" },
-      h("span", { class: "proof-item" }, h("span", { class: "pulse small", "aria-hidden": "true" }), `building ${profile.project} at ${profile.company}`),
-      cmd("projects ternodbi", h("span", {}, h("strong", {}, "280+"), " commits to TernoDBI"), "proof-item proof-link"),
-      h("span", { class: "proof-item" }, "published on PyPI"),
-      h("button", { type: "button", class: "proof-item proof-link hero-last", "data-activity": "last", "data-run": "activity", hidden: true }),
-    ),
-    h(
-      "div",
-      { class: "hero-try" },
-      h("span", { class: "muted" }, "or explore"),
-      cmd("projects", "projects", "chip-btn"),
-      cmd("about", "about", "chip-btn"),
-      cmd("ask what does navin work on?", h("span", {}, icon("sparkle", 13), "ask a question"), "chip-btn"),
-      cmd("sql SELECT name, year FROM projects WHERE kind = 'work'", h("span", {}, icon("database", 13), "query with SQL"), "chip-btn"),
-      cmd("contact", "contact", "chip-btn"),
-      cmd("quests", h("span", {}, icon("trophy", 13), "quests"), "chip-btn"),
+      "ul",
+      {},
+      ...rows.map(([ic, title, sub, run]) =>
+        h(
+          "li",
+          {},
+          h(
+            "button",
+            { type: "button", class: "explore-row", "data-run": run },
+            h("span", { class: "explore-icon", "aria-hidden": "true" }, icon(ic, 15)),
+            h("span", { class: "explore-text" }, h("strong", {}, title), h("span", {}, sub)),
+            h("code", { class: "explore-cmd" }, run.split(" ")[0]),
+          ),
+        ),
+      ),
     ),
   );
 }

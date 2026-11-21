@@ -20,6 +20,14 @@ export const profile = {
   offline: ["film-making", "photography", "fitness", "meditation"],
 };
 
+/** The opening screen's facts, served as the `navin` SQL table. */
+export const facts: [string, string][] = [
+  ["now", "AI Software Engineer at CloudxLab, building Terno AI"],
+  ["builds", "AI agents · MCP servers · RAG memory · evals · safe text-to-SQL"],
+  ["proof", "3 packages on PyPI · 300+ commits to TernoDBI · agents in production"],
+  ["before", "R&D at Tata Steel · B.Tech, IIT Jodhpur"],
+];
+
 /** What I build — shown on the opening screen, the about page and the plain page. */
 export const focusAreas = [
   { icon: "sparkle", title: "AI agents", body: "Custom and framework agents — LangChain, CrewAI, AutoGen, OpenAI SDK — that reason over real databases." },
@@ -30,6 +38,7 @@ export const focusAreas = [
 
 export const links = {
   github: "https://github.com/navinbhagat322",
+  pypi: "https://pypi.org/user/navinbhagat322/",
   linkedin: "https://www.linkedin.com/in/navin322/",
   email: "navinbhagat322@gmail.com",
   youtube: "https://www.youtube.com/@Navin_bhagat",
@@ -52,12 +61,13 @@ export const projects: Project[] = [
   {
     slug: "agents",
     name: "Terno AI agents",
-    kind: "work",
+    kind: "open-source",
     year: 2026,
     stack: ["LangChain", "CrewAI", "AutoGen", "OpenAI SDK", "MCP"],
     summary:
-      "Custom and framework-based AI agents that inspect database schemas, sample data and solve complex SQL reasoning tasks.",
+      "Custom and framework-based AI agents that inspect database schemas, sample data and solve complex SQL reasoning tasks. The Terno agent itself is open source and on PyPI as terno-agent.",
     highlights: [
+      "Contributor to terno-agent, a multi-agent CLI that answers questions about your database and runs code in a sandbox (Apache-2.0, on PyPI)",
       "Agents built with LangChain, CrewAI, AutoGen and the OpenAI SDK, plus custom ones",
       "Dynamic MCP tool adapters so any agent can inspect schemas and sample data",
       "Prompting, org memory, plan mode and notebook-style reports in the Terno agent",
@@ -88,7 +98,7 @@ export const projects: Project[] = [
     summary:
       "An open-source MCP server, published on PyPI, that lets AI agents query databases in natural language — scoped, validated and explained.",
     highlights: [
-      "Top contributor — 280+ commits",
+      "Top contributor — 300+ commits",
       "Hosted MCP server with OAuth and dynamic client registration (works with Claude, Cursor, ChatGPT)",
       "Service-token scopes, multi-tenancy and encrypted credentials",
       "Server-side streaming and cursor pagination for enterprise-scale results",
@@ -143,6 +153,22 @@ export const projects: Project[] = [
     summary:
       "A RAG chatbot over financial transcripts (LLaMA 3.2 via Ollama), with multi-PDF upload and real-time chat in Streamlit.",
     url: "https://github.com/navinbhagat322/Intern_chatbot_P",
+  },
+  {
+    slug: "vink",
+    name: "Vink",
+    kind: "open-source",
+    year: 2026,
+    stack: ["Python", "MCP", "CLI"],
+    summary:
+      "Turns YouTube transcripts into clean, timestamped Markdown and full, detailed notes, not summaries. A CLI and an MCP server for Claude, Cursor and any MCP client; no API key needed.",
+    highlights: [
+      "Published on PyPI as vink (MIT)",
+      "Long videos are read in chunks, so notes stay complete instead of summarised",
+      "Works as a command-line tool or as an MCP server inside AI assistants",
+    ],
+    url: "https://github.com/navinbhagat322/youtube-vink",
+    featured: true,
   },
   {
     slug: "qr-transfer",
@@ -203,7 +229,7 @@ export const experience: Role[] = [
       "Built custom and framework agents (LangChain, CrewAI, AutoGen, OpenAI SDK) with dynamic MCP tool adapters",
       "Built a production agent evaluation framework with Django and Celery",
       "Designed a self-improving semantic RAG memory in Milvus",
-      "Published TernoDBI on PyPI; secured agent SQL with LLM SQL Shield; built a multi-threaded MCP host",
+      "Published TernoDBI and terno-agent on PyPI; secured agent SQL with LLM SQL Shield; built a multi-threaded MCP host",
     ],
   },
   {
@@ -273,7 +299,7 @@ export const recruiter = {
     },
     {
       title: "TernoDBI & SQL Shield",
-      body: "Published an MCP server on PyPI (280+ commits) and secured agent SQL with validation and table/column access control.",
+      body: "Published an MCP server on PyPI (300+ commits) and secured agent SQL with validation and table/column access control.",
       href: "https://github.com/terno-ai/ternodbi",
     },
   ],

@@ -59,6 +59,12 @@ export function lastShipped(a: Activity | null = cache): string | null {
 
 /** Fills placeholders like <span data-activity="last"> once the data arrives. */
 export function fillPlaceholders(root: ParentNode = document) {
+  if (cache?.month.commits) {
+    const n = cache.month.commits;
+    root.querySelectorAll<HTMLElement>('[data-activity="count"]').forEach((el) => {
+      el.textContent = `${n} commit${n === 1 ? "" : "s"} in the last 30 days · ${lastShipped()?.replace(/ · .*/, "")}`;
+    });
+  }
   const text = lastShipped();
   if (!text) return;
   root.querySelectorAll<HTMLElement>('[data-activity="last"]').forEach((el) => {

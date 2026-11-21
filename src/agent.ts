@@ -24,7 +24,7 @@ const intents: Intent[] = [
     keywords: /\b(ternodbi|dbi|mcp|connector|connectors|data layer|oauth)\b/gi,
     answer: () => [
       h("strong", {}, "TernoDBI"),
-      ` is one part of his work at Terno AI: an open-source MCP server (on PyPI) where Navin is the top contributor (280+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
+      ` is one part of his work at Terno AI: an open-source MCP server (on PyPI) where Navin is the top contributor (300+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
       cmd("projects ternodbi", "Full details →"),
     ],
   },

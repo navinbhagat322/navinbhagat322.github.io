@@ -212,7 +212,7 @@ export function vinkSVG(crop: "full" | "head" = "full"): string {
 const POKE_LINES = [
   "Hey! That tickles.",
   "I'm Vink — Navin, but with infinite patience for your questions.",
-  "Fun fact: Navin wrote 280+ commits to TernoDBI. I counted.",
+  "Fun fact: Navin wrote 300+ commits to TernoDBI. I counted.",
   "You can pick me up, you know. Drag me around.",
   "Try typing a question. I'm better at answering than at standing still.",
   "Psst. Have you tried ⌘K?",

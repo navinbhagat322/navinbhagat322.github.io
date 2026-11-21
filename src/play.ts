@@ -42,6 +42,22 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   const game = new Game();
   const vink = new Vink();
   shell.composer.append(vink.el);
+  // Vink stands by quietly; hints and news wait until the visitor does something.
+  let summoned = false;
+  const firstVisit = game.xp === 0;
+  const summon = () => {
+    if (summoned) return;
+    summoned = true;
+    vink.setPose("wave", 1600);
+    // A one-time introduction; returning visitors just get the wave.
+    if (firstVisit && !quiet)
+      chat(
+        phone()
+          ? ["Hi, I'm ", h("strong", {}, "Vink"), ", Navin's twin. Tap me for tips, or × to keep me quiet."]
+          : ["Hi! I'm ", h("strong", {}, "Vink"), ", Navin's illustrated twin. Poke around and you'll unlock quests — ", cmd("quests"), " shows them all. × keeps me quiet."],
+        6500,
+      );
+  };
 
   // Closing a bubble with × keeps Vink quiet from then on: no welcome, hints,
   // news or commentary. He still answers when poked or given a command.
@@ -67,6 +83,8 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   const paintXp = () => {
     const lvl = game.level();
     xpLabel.textContent = `Lv ${lvl.number} · ${game.xp} xp`;
+    // The game shows itself once someone is actually playing.
+    xpBtn.hidden = game.done < 2;
     xpFill.style.width = `${Math.round((game.xp / game.maxXp) * 100)}%`;
   };
   paintXp();
@@ -129,7 +147,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     }
     if (after.number > before && !muted) {
       vink.setPose("celebrate", 2400);
-      void vink.say(["Level up! You're now a ", h("strong", {}, after.title), ". ", cmd("quests"), " shows what's left."], 5000);
+      void vink.say([`Level up! You're now ${/^[aeiou]/i.test(after.title) ? "an" : "a"} `, h("strong", {}, after.title), ". ", cmd("quests"), " shows what's left."], 5000);
       return;
     }
     vink.setPose("celebrate", 1400);
@@ -147,6 +165,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     window.setTimeout(() => xpBtn.classList.remove("bump"), 600);
   };
   game.onUnlock = (q) => {
+    summon();
     pending.push(q);
     clearTimeout(flushTimer);
     flushTimer = window.setTimeout(flushUnlocks, 120);
@@ -184,6 +203,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
       vink.setPose("idle");
       return;
     }
+    summon();
     if (name === "ask" || (!shell.get(name) && looksLikeQuestion(line))) vink.setPose("think");
     else if (name === "sql") vink.setPose("type");
     else if (name !== "vink") vink.setPose("type");
@@ -237,6 +257,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   ["keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, resetIdle, { passive: true }));
   window.setInterval(() => {
     const idle = Date.now() - lastActive;
+    if (!summoned) return;
     if (idle > 110_000 && vink.pose === "idle") {
       vink.hush();
       vink.setPose("sleep");
@@ -253,20 +274,6 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     }
   }, 4000);
 
-  // ---------- hello ----------
-  // On phones, only first-time visitors get a bubble; space is tight there.
-  if (!muted && !new URLSearchParams(location.search).has("tldr") && !(phone() && game.xp > 0)) window.setTimeout(() => {
-    vink.setPose("wave", 1800);
-    if (phone()) {
-      void vink.say(["Hi, I'm ", h("strong", {}, "Vink"), ", Navin's twin. Tap me for tips, or × to keep me quiet."], 6000);
-    } else if (game.xp > 0) {
-      const lvl = game.level();
-      void vink.say(["Welcome back! You're level ", h("strong", {}, String(lvl.number)), ` (${lvl.title}) with ${game.done}/${quests.length} quests. `, cmd("quests")], 6500);
-    } else {
-      void vink.say(["Hi! I'm ", h("strong", {}, "Vink"), ", Navin's illustrated twin. Look around and you'll unlock quests — ", cmd("quests"), " shows them all."], 7000);
-    }
-  }, 900);
-
   // ---------- shipping news: once per visit, when Vink has nothing else to say ----------
   void loadActivity().then((a) => {
     if (!a || !a.week.commits) return;
@@ -280,7 +287,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     window.setTimeout(() => {
       const data = activity();
       const c = data && notable(data);
-      if (!data || !c || muted || vink.speaking || vink.pose !== "idle" || game.has("shipped")) return;
+      if (!data || !c || muted || !summoned || vink.speaking || vink.pose !== "idle" || game.has("shipped")) return;
       try {
         sessionStorage.setItem("vink-news", "1");
       } catch {

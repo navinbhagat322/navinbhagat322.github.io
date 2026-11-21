@@ -4,7 +4,7 @@ import "@fontsource/press-start-2p/400.css";
 import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";
-import { analyticsEnabled, startAnalytics, totalVisits, trackCommand } from "./analytics";
+import { analyticsEnabled, startAnalytics, trackCommand } from "./analytics";
 import { ask, looksLikeQuestion } from "./agent";
 import { commands } from "./commands";
 import { links, profile } from "./content";
@@ -61,7 +61,6 @@ async function startShell() {
   const titlebar = h(
     "header",
     { class: "titlebar" },
-    h("div", { class: "lights", "aria-hidden": "true" }, h("span", {}), h("span", {}), h("span", {})),
     h("div", { class: "title" }, h("span", { class: "title-user" }, `${profile.handle}@${profile.host}`), h("span", { class: "title-path" }, " — ~/portfolio")),
     h(
       "div",
@@ -86,16 +85,8 @@ async function startShell() {
   setInterval(tick, 30_000);
 
   const xpSlot = h("span", {});
-  // Visit count: hidden until GoatCounter is set up and the number loads.
-  const visitsSlot = h("button", { type: "button", class: "sb-item sb-link sb-visits", "data-run": "visits", title: "Profile visits", hidden: true });
-  if (analyticsEnabled()) {
-    startAnalytics();
-    void totalVisits().then((n) => {
-      if (!n || n === "0") return;
-      visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, n === "1" ? " visit" : " visits"));
-      visitsSlot.hidden = false;
-    });
-  }
+  // Analytics run quietly; the count stays behind the `visits` command.
+  if (analyticsEnabled()) startAnalytics();
 
   const statusbar = h(
     "footer",
@@ -103,7 +94,6 @@ async function startShell() {
     h("span", { class: "sb-item sb-hide-mobile" }, icon("branch", 12), "main"),
     h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "projects" }, h("span", { class: "pulse small" }), "building Terno AI"),
     h("span", { class: "sb-spacer" }),
-    visitsSlot,
     xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),
     h("span", { class: "sb-item sb-clock" }, clock),

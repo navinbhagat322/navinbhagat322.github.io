@@ -79,6 +79,11 @@
   box-sizing: border-box;
 }
 
+/* `hidden` always wins, even over components that set their own display. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -213,27 +218,6 @@ code {
   border-bottom: 1px solid var(--line);
   background: var(--chrome);
   user-select: none;
-}
-
-.lights {
-  display: flex;
-  gap: 8px;
-}
-
-.lights span {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ff5f57;
-  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.2);
-}
-
-.lights span:nth-child(2) {
-  background: #febc2e;
-}
-
-.lights span:nth-child(3) {
-  background: #28c840;
 }
 
 .title {
@@ -531,7 +515,6 @@ code {
 }
 
 .cmd-link:active,
-.proof-link:active,
 .sb-link:active {
   color: var(--accent-2);
 }
@@ -581,11 +564,194 @@ code {
   font-size: 14px;
 }
 
+/* ---------- opening screen: claim, facts as a query, proof on the side ---------- */
+
+.hero {
+  display: grid;
+  /* Story on the left, the index pinned to the right edge. */
+  grid-template-columns: minmax(0, 760px) minmax(330px, 390px);
+  justify-content: space-between;
+  gap: 48px;
+  align-items: start;
+  padding-top: clamp(32px, 6vh, 64px);
+}
+
+.hero-claim {
+  max-width: 17ch;
+  margin: 28px 0 0;
+  font: 650 clamp(32px, 4.2vw, 48px)/1.08 var(--sans);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.hero-query {
+  max-width: 620px;
+  margin-top: 30px;
+}
+
+.hq-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  font: 13px var(--mono);
+}
+
+.hq-prompt {
+  color: var(--accent);
+}
+
+.hq-line code {
+  color: var(--fg-soft);
+  font: inherit;
+}
+
+.hq-table {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.hq-table th {
+  width: 84px;
+  padding: 10px 14px;
+  background: var(--card);
+  border-bottom: 0;
+  color: var(--muted);
+  font: 12px var(--mono);
+  letter-spacing: 0;
+  text-transform: none;
+  vertical-align: top;
+}
+
+.hq-table td {
+  padding: 10px 14px;
+  color: var(--fg);
+  font: 13.5px/1.5 var(--sans);
+}
+
+.hq-table tr + tr :is(th, td) {
+  border-top: 1px solid var(--line);
+}
+
+.hq-table tbody tr:hover :is(th, td) {
+  background: var(--hover);
+}
+
+/* The page's one bit of motion: the result rows arrive like a query returning. */
+.hq-table tr {
+  animation: row-in 0.35s calc(0.45s + var(--i) * 0.09s) ease-out both;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.explore {
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.explore-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 9px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font: 11.5px var(--mono);
+}
+
+.explore-head > span:last-child {
+  color: var(--faint);
+}
+
+.explore ul {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.explore-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--fg);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.explore-row:hover,
+.explore-row:focus-visible {
+  background: var(--hover-strong);
+}
+
+.explore-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.explore-row:hover .explore-icon {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line-strong));
+  color: var(--accent);
+}
+
+.explore-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.explore-text strong {
+  font: 500 13.5px/1.3 var(--sans);
+}
+
+.explore-text > span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.explore-cmd {
+  color: var(--faint);
+  font: 11.5px var(--mono);
+  transition: color 0.15s;
+}
+
+.explore-row:hover .explore-cmd {
+  color: var(--accent);
+}
+
 .dot-sep {
   margin: 0 8px;
   color: var(--faint);
 }
-
 
 /* "what I build" as a quiet list (about + plain pages) */
 .focus {
@@ -844,64 +1010,6 @@ button.sys-node:hover {
   animation: fade-in 0.35s ease-out both;
 }
 
-/* one line of proof under the diagram */
-.hero-proof {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 0;
-  margin-top: 14px;
-  font: 12px var(--mono);
-  color: var(--muted);
-}
-
-.proof-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.proof-item + .proof-item::before {
-  content: "·";
-  margin: 0 10px;
-  color: var(--faint);
-}
-
-.hero-proof .hero-last::before {
-  content: "·";
-}
-
-.proof-link {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.proof-link:hover {
-  color: var(--accent);
-}
-
-.proof-link > span {
-  display: inline;
-}
-
-.proof-item strong {
-  color: var(--fg);
-  font-weight: 600;
-}
-
-.hero-now {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 22px;
-  font-size: 13.5px;
-}
-
 .pulse {
   position: relative;
   width: 8px;
@@ -933,91 +1041,6 @@ button.sys-node:hover {
   }
 }
 
-.hero-try {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.hero-try > .muted {
-  font: 12px var(--mono);
-  margin-right: 4px;
-}
-
-/* the opening line: "I build ___" */
-.headline {
-  margin: 26px 0 0;
-  font: 650 40px/1.12 var(--sans);
-  letter-spacing: -0.035em;
-  color: var(--fg);
-  text-wrap: balance;
-}
-
-.rot {
-  display: inline-flex;
-  align-items: baseline;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  letter-spacing: inherit;
-  cursor: pointer;
-}
-
-.headline-lead {
-  margin-right: 0.3em;
-}
-
-/* The rotating phrase: pixel type in title case, gold → orange, with a hard 8-bit
-   drop shadow. Pixel fonts have a full-width space, so word spacing is pulled in. */
-.rot-word {
-  font: 400 0.62em/1.35 var(--pixel);
-  letter-spacing: 0.02em;
-  word-spacing: -0.42em;
-  white-space: nowrap;
-  background: var(--grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0.09em 0.09em 0 var(--grad-shadow));
-  transition: filter 0.2s;
-}
-
-.rot:hover .rot-word {
-  filter: drop-shadow(0.09em 0.09em 0 var(--grad-shadow)) brightness(1.12);
-}
-
-.rot-caret {
-  display: inline-block;
-  width: 0.36em;
-  height: 0.5em;
-  margin-left: 0.14em;
-  background: var(--accent-2);
-  box-shadow: 0.06em 0.06em 0 var(--grad-shadow);
-  animation: caret-blink 0.9s steps(1) infinite;
-}
-
-.rot.typing .rot-caret {
-  animation: none;
-}
-
-@keyframes caret-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-.hero-sub {
-  max-width: 60ch;
-  margin: 12px 0 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--fg-soft);
-  text-wrap: pretty;
-}
-
 .ghost-btn {
   display: inline-flex;
   align-items: center;
@@ -1042,11 +1065,6 @@ button.sys-node:hover {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--line-strong));
   background: var(--card);
   color: var(--fg);
-}
-
-/* visit counter */
-.sb-visits .icon {
-  color: var(--accent);
 }
 
 .visits {
@@ -1140,7 +1158,7 @@ button.sys-node:hover {
 }
 
 .cta-tag {
-  margin-left: 2px;
+  margin-left: -2px;
   padding: 4px 6px 3px;
   border-radius: 5px;
   background: var(--accent-soft);
@@ -1289,24 +1307,6 @@ button.sys-node:hover {
   margin: 14px 0 0;
   font-size: 13px;
   color: var(--muted);
-}
-
-/* github activity */
-.hero-last {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: 12px var(--mono);
-  color: var(--faint);
-  cursor: pointer;
-}
-
-.hero-last::before {
-  content: "· ";
-}
-
-.hero-last:hover {
-  color: var(--accent);
 }
 
 .activity {
@@ -2291,7 +2291,8 @@ td.bool {
   --offset: 0px;
   --lift: 0px;
   position: absolute;
-  right: 22px;
+  /* Stand inside the prompt box's right edge (the composer's side padding + a step). */
+  right: calc(clamp(16px, 4vw, 56px) + 10px);
   bottom: calc(100% - 10px);
   z-index: 4;
   display: flex;
@@ -3347,7 +3348,6 @@ body.plain-mode #app {
     padding: 0 8px 0 16px;
   }
 
-  .lights,
   .kbd-label,
   .composer-hint,
   .sb-clock {
@@ -3374,25 +3374,6 @@ body.plain-mode #app {
     padding: 28px 16px 24px;
   }
 
-  .headline {
-    margin-top: 20px;
-    font-size: 30px;
-  }
-
-  .rot {
-    display: flex;
-    margin-top: 6px;
-  }
-
-  .rot-word {
-    font-size: 0.6em;
-  }
-
-  .hero-sub {
-    font-size: 15px;
-  }
-
-
   .focus {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -3409,17 +3390,6 @@ body.plain-mode #app {
   .sys-node {
     min-height: 50px;
     padding: 7px 9px;
-  }
-
-  .hero-proof {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .proof-item + .proof-item::before,
-  .hero-proof .hero-last::before {
-    content: none;
   }
 
   .block {
@@ -3522,17 +3492,13 @@ body.plain-mode #app {
     display: none;
   }
 
-  .sb-visits-word {
-    display: none;
-  }
-
   .statusbar {
     gap: 12px;
     overflow: hidden;
   }
 
   .vink {
-    right: 10px;
+    right: 24px;
     bottom: calc(100% - 8px);
   }
 
@@ -3584,5 +3550,112 @@ body.plain-mode #app {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============ full-bleed ============ */
+
+#app {
+  padding: 0;
+}
+
+.window {
+  width: 100%;
+  height: 100dvh;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.titlebar {
+  grid-template-columns: 1fr auto;
+  padding-inline: clamp(16px, 4vw, 56px) clamp(10px, 3vw, 44px);
+}
+
+.title {
+  text-align: left;
+}
+
+.hero,
+.block {
+  padding-inline: clamp(16px, 4vw, 56px);
+}
+
+.block > * {
+  max-width: 1180px;
+}
+
+.composer,
+.statusbar {
+  padding-inline: clamp(16px, 4vw, 56px);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .explore {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-claim {
+    margin-top: 22px;
+    font-size: 30px;
+  }
+
+  .hq-line code {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hq-table th {
+    width: 64px;
+    padding: 9px 10px;
+  }
+
+  .hq-table td {
+    padding: 9px 12px 9px 10px;
+    font-size: 13px;
+  }
+
+  .hero-hurry .cta {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Phones tap; the command names would only squeeze the descriptions. */
+  .explore-cmd,
+  .explore-head > span:last-child {
+    display: none;
+  }
+
+  .explore-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+/* Short laptop screens: keep the explore list clear of Vink. */
+@media (max-height: 760px) and (min-width: 901px) {
+  .hero {
+    padding-top: 22px;
+  }
+
+  .explore-row {
+    padding-block: 2px;
+  }
+
+  .explore-icon {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hq-table tr {
+    animation: none;
   }
 }

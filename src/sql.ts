@@ -5,12 +5,13 @@
 //              [ORDER BY <col> [ASC|DESC]] [LIMIT <n>]
 // ops: = != <> < > <= >= LIKE ILIKE
 
-import { experience, links, projects, skills } from "./content";
+import { experience, facts, links, projects, skills } from "./content";
 
 type Value = string | number | boolean;
 type Row = Record<string, Value>;
 
 export const tables: Record<string, Row[]> = {
+  navin: facts.map(([field, value]) => ({ field, value })),
   projects: projects.map((p) => ({
     slug: p.slug,
     name: p.name,
