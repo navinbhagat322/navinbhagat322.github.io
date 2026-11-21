@@ -43,6 +43,14 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   const vink = new Vink();
   shell.composer.append(vink.el);
 
+  // Closing a bubble with × keeps Vink quiet from then on: no welcome, hints,
+  // news or commentary. He still answers when poked or given a command.
+  const phone = () => window.matchMedia("(max-width: 640px)").matches;
+  let muted = load(MUTE_KEY) === "1";
+  const chat = (content: Child | Child[], ms?: number) => {
+    if (!muted) void vink.say(content, ms);
+  };
+
   const toasts = h("div", { class: "toasts", "aria-live": "polite" });
   windowEl.append(toasts);
 
@@ -67,7 +75,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   // One channel at a time: a level-up or the finale is Vink's to announce;
   // everything else is a single small toast. Toasts never stack, and wait
   // while Vink is talking.
-  const toastQueue: { icon: string; label: string; xp: number }[] = [];
+  const toastQueue: { icon: string; label: string; xp?: number }[] = [];
   let toastBusy = false;
 
   function showNextToast() {
@@ -83,7 +91,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
       { class: "toast", role: "status" },
       h("span", { class: "toast-icon", "aria-hidden": "true" }, icon(t.icon, 14)),
       h("span", { class: "toast-label" }, t.label),
-      h("span", { class: "toast-xp" }, `+${t.xp} xp`),
+      t.xp ? h("span", { class: "toast-xp" }, `+${t.xp} xp`) : null,
     );
     toasts.replaceChildren(el);
     window.setTimeout(() => {
@@ -110,7 +118,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     const after = game.level();
     if (quiet) return;
 
-    if (game.complete) {
+    if (game.complete && !muted) {
       vink.setPose("celebrate", 5000);
       vink.confetti(windowEl);
       void vink.say(
@@ -119,7 +127,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
       );
       return;
     }
-    if (after.number > before) {
+    if (after.number > before && !muted) {
       vink.setPose("celebrate", 2400);
       void vink.say(["Level up! You're now a ", h("strong", {}, after.title), ". ", cmd("quests"), " shows what's left."], 5000);
       return;
@@ -142,6 +150,18 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     pending.push(q);
     clearTimeout(flushTimer);
     flushTimer = window.setTimeout(flushUnlocks, 120);
+  };
+
+  vink.onDismiss = () => {
+    if (muted) return;
+    muted = true;
+    save(MUTE_KEY, "1");
+    toastQueue.push({ icon: "check", label: "Vink will stay quiet. Tap him to chat." });
+    showNextToast();
+  };
+  const setMuted = (on: boolean) => {
+    muted = on;
+    save(MUTE_KEY, on ? "1" : "0");
   };
 
   vink.onPoke = () => game.step("poke");
@@ -201,7 +221,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
 
     // A comment the first time someone runs each command (unless a quest just spoke).
     const line1 = FIRST_TIME[canonical];
-    if (line1 && game.firstTime(canonical) && game.xp === xpBefore) window.setTimeout(() => void vink.say(line1, 4200), 450);
+    if (line1 && game.firstTime(canonical) && game.xp === xpBefore) window.setTimeout(() => chat(line1, 4200), 450);
   };
 
   // ---------- idle behaviour: a hint now and then, then a nap ----------
@@ -211,7 +231,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     lastActive = Date.now();
     if (vink.pose === "sleep") {
       vink.setPose("wave", 1400);
-      void vink.say("Oh! I'm up, I'm up.", 2200);
+      chat("Oh! I'm up, I'm up.", 2200);
     }
   }
   ["keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, resetIdle, { passive: true }));
@@ -220,7 +240,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     if (idle > 110_000 && vink.pose === "idle") {
       vink.hush();
       vink.setPose("sleep");
-    } else if (idle > 28_000 && hints < 3 && vink.pose === "idle" && idle < 60_000 + hints * 30_000) {
+    } else if (!muted && !phone() && idle > 28_000 && hints < 3 && vink.pose === "idle" && idle < 60_000 + hints * 30_000) {
       const q = game.nextQuest();
       const hint = q && HINTS[q.id];
       if (hint && idle > 28_000 + hints * 30_000) {
@@ -234,9 +254,12 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   }, 4000);
 
   // ---------- hello ----------
-  if (!new URLSearchParams(location.search).has("tldr")) window.setTimeout(() => {
+  // On phones, only first-time visitors get a bubble; space is tight there.
+  if (!muted && !new URLSearchParams(location.search).has("tldr") && !(phone() && game.xp > 0)) window.setTimeout(() => {
     vink.setPose("wave", 1800);
-    if (game.xp > 0) {
+    if (phone()) {
+      void vink.say(["Hi, I'm ", h("strong", {}, "Vink"), ", Navin's twin. Tap me for tips, or × to keep me quiet."], 6000);
+    } else if (game.xp > 0) {
       const lvl = game.level();
       void vink.say(["Welcome back! You're level ", h("strong", {}, String(lvl.number)), ` (${lvl.title}) with ${game.done}/${quests.length} quests. `, cmd("quests")], 6500);
     } else {
@@ -253,11 +276,11 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     } catch {
       /* no storage: tell them anyway */
     }
-    if (told) return;
+    if (told || muted || phone()) return;
     window.setTimeout(() => {
       const data = activity();
       const c = data && notable(data);
-      if (!data || !c || vink.speaking || vink.pose !== "idle" || game.has("shipped")) return;
+      if (!data || !c || muted || vink.speaking || vink.pose !== "idle" || game.has("shipped")) return;
       try {
         sessionStorage.setItem("vink-news", "1");
       } catch {
@@ -276,7 +299,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     }, 12_000);
   });
 
-  return { game, vink, commands: playCommands(game, vink, windowEl) };
+  return { game, vink, commands: playCommands(game, vink, windowEl, setMuted) };
 }
 
 /** Level number for an arbitrary XP total, to spot level-ups. */
@@ -326,8 +349,8 @@ function questView(game: Game): HTMLElement {
   );
 }
 
-function playCommands(game: Game, vink: Vink, windowEl: HTMLElement): Command[] {
-  const actions: Record<string, Pose | "hide" | "show"> = {
+function playCommands(game: Game, vink: Vink, windowEl: HTMLElement, setMuted: (on: boolean) => void): Command[] {
+  const actions: Record<string, Pose | "hide" | "show" | "quiet" | "talk"> = {
     wave: "wave",
     dance: "dance",
     jump: "celebrate",
@@ -339,6 +362,8 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement): Command[] 
     shrug: "shrug",
     hide: "hide",
     show: "show",
+    quiet: "quiet",
+    talk: "talk",
   };
   return [
     {
@@ -368,7 +393,7 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement): Command[] 
         if (!action) {
           vink.setPose("wave", 1600);
           void vink.say("That's me! Poke me, drag me around, ask me things, or tell me what to do.", 4000);
-          out("Vink is Navin's illustrated twin. He lives on the command bar, reacts to what you do, follows your cursor with his eyes and hands out quests. Pick him up and move him if he's in the way.");
+          out("Vink is Navin's illustrated twin. He lives on the command bar, reacts to what you do, follows your cursor with his eyes and hands out quests. Pick him up and move him if he's in the way, or close any of his bubbles with × to keep him quiet.");
           out(
             h("span", { class: "muted" }, "try: "),
             ...Object.keys(actions).flatMap((a, i) => [i ? "  " : "", cmd(`vink ${a}`, a)]),
@@ -380,6 +405,18 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement): Command[] 
         if (pose === "hide") {
           vink.el.hidden = true;
           out(h("span", { class: "muted" }, "vink went for a walk. "), cmd("vink show", "call him back"));
+          return;
+        }
+        if (pose === "quiet") {
+          setMuted(true);
+          vink.hush();
+          out(h("span", { class: "muted" }, "vink will only speak when spoken to. "), cmd("vink talk", "let him chat again"));
+          return;
+        }
+        if (pose === "talk") {
+          setMuted(false);
+          vink.setPose("wave", 1500);
+          void vink.say("I'm back to chatting. × on any bubble quiets me again.", 3500);
           return;
         }
         if (pose === "show") {
@@ -401,4 +438,22 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement): Command[] 
       },
     },
   ];
+}
+
+const MUTE_KEY = "vink-muted";
+
+function load(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function save(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* no storage: the choice lasts this visit */
+  }
 }

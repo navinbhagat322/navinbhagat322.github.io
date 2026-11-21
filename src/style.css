@@ -3545,6 +3545,20 @@ body.plain-mode #app {
     margin-bottom: 64px;
   }
 
+  /* A thumb-sized × on touch screens. */
+  .vink-bubble {
+    padding-right: 36px;
+  }
+
+  .vink-close {
+    top: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    font-size: 20px;
+  }
+
   .feed {
     padding-bottom: 110px;
   }

@@ -237,6 +237,8 @@ export class Vink {
   private walkTimer = 0;
   onPoke?: () => void;
   onDrag?: () => void;
+  /** The visitor closed a bubble with ×. */
+  onDismiss?: () => void;
 
   constructor() {
     this.bubble = h("div", { class: "vink-bubble", role: "status", "aria-live": "polite", hidden: true });
@@ -403,7 +405,20 @@ export class Vink {
     this.bubble.replaceChildren(
       h("span", { class: "vink-name" }, "vink"),
       text,
-      h("button", { type: "button", class: "vink-close", "aria-label": "Dismiss", onClick: () => this.hush() }, "×"),
+      h(
+        "button",
+        {
+          type: "button",
+          class: "vink-close",
+          "aria-label": "Close and keep Vink quiet",
+          title: "Close · Vink stops popping up",
+          onClick: () => {
+            this.hush();
+            this.onDismiss?.();
+          },
+        },
+        "×",
+      ),
     );
     this.bubble.hidden = false;
     this.bubble.classList.remove("out");
