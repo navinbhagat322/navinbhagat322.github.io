@@ -62,7 +62,7 @@ export function fillPlaceholders(root: ParentNode = document) {
   if (cache?.month.commits) {
     const n = cache.month.commits;
     root.querySelectorAll<HTMLElement>('[data-activity="count"]').forEach((el) => {
-      el.textContent = `${n} commit${n === 1 ? "" : "s"} in the last 30 days · ${lastShipped()?.replace(/ · .*/, "")}`;
+      el.textContent = `${n} commit${n === 1 ? "" : "s"} in the last 30 days`;
     });
   }
   const text = lastShipped();

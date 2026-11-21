@@ -12,9 +12,10 @@ export const profile = {
   role: "AI Software Engineer",
   company: "CloudxLab",
   project: "Terno AI",
-  location: "India",
+  location: "Pune, India",
+  looking: "Open to AI engineering roles",
   tagline:
-    "I build AI agents and everything they need to work on real data — agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.",
+    "I build AI agents and the systems around them — agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.",
   education: "B.Tech, IIT Jodhpur",
   focus: ["AI agents", "agent evals", "RAG", "MCP", "text-to-SQL"],
   offline: ["film-making", "photography", "fitness", "meditation"],
@@ -22,10 +23,10 @@ export const profile = {
 
 /** The opening screen's facts, served as the `navin` SQL table. */
 export const facts: [string, string][] = [
-  ["now", "AI Software Engineer at CloudxLab, building Terno AI"],
   ["builds", "AI agents · MCP servers · RAG memory · evals · safe text-to-SQL"],
   ["proof", "3 packages on PyPI · 300+ commits to TernoDBI · agents in production"],
   ["before", "R&D at Tata Steel · B.Tech, IIT Jodhpur"],
+  ["looking", "Open to AI engineering roles"],
 ];
 
 /** What I build — shown on the opening screen, the about page and the plain page. */
@@ -307,6 +308,7 @@ export const recruiter = {
     ["role", "AI Software Engineer @ CloudxLab (Terno AI)"],
     ["education", "B.Tech, IIT Jodhpur · CGPA 8.15"],
     ["stack", "Python · Django · LangChain · MCP · RAG · PyTorch"],
-    ["based in", "India"],
+    ["based in", "Pune, India"],
+    ["looking", "Open to AI engineering roles"],
   ] as [string, string][],
 };

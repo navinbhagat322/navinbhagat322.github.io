@@ -220,8 +220,9 @@ const POKE_LINES = [
 ];
 
 /**
- * The on-screen Vink: stands on the composer, changes pose, follows the cursor
- * with his eyes, wanders, can be dragged, and talks through a speech bubble.
+ * The on-screen Vink: stands in an empty corner of the window, changes pose,
+ * follows the cursor with his eyes, strolls, can be dragged anywhere, and talks
+ * through a speech bubble.
  */
 export class Vink {
   readonly el: HTMLElement;
@@ -233,10 +234,18 @@ export class Vink {
   private sayToken = 0;
   private pokeIndex = 0;
   private current: Pose = "idle";
-  private offset = 0;
+  // Where he stands: figure's left edge and feet height, in px inside the window.
+  private x = 0;
+  private y = 0;
+  /** True once the visitor has dragged him somewhere; he then stays there. */
+  private moved = false;
   private walkTimer = 0;
   onPoke?: () => void;
   onDrag?: () => void;
+  /** His spot when nobody has moved him. */
+  homeSpot?: () => { x: number; y: number };
+  /** The areas he may stroll in (he stays inside the one he's standing in). */
+  regions?: () => { left: number; right: number }[];
   /** The visitor closed a bubble with ×. */
   onDismiss?: () => void;
 
@@ -275,54 +284,70 @@ export class Vink {
 
   // ---------- moving ----------
 
-  private maxOffset() {
-    const host = this.el.parentElement;
-    if (!host) return 0;
-    return Math.max(0, host.clientWidth - this.figure.offsetWidth - 40);
+  get width() {
+    return this.figure.offsetWidth;
   }
 
-  private place(offset: number, lift = 0) {
-    this.offset = Math.max(0, Math.min(this.maxOffset(), offset));
-    this.el.style.setProperty("--offset", `${this.offset}px`);
-    this.el.style.setProperty("--lift", `${lift}px`);
-    // Past the middle, the bubble goes on his right so it stays in the window.
+  private bounds() {
     const host = this.el.parentElement;
-    this.el.classList.toggle("bubble-right", !!host && this.offset > host.clientWidth / 2 - 120);
+    return { w: host?.clientWidth ?? 0, h: host?.clientHeight ?? 0, fw: this.figure.offsetWidth, fh: this.figure.offsetHeight };
   }
 
-  /** Strolls along the composer to a spot, `offset` px left of his home corner. */
-  async walkTo(offset: number) {
+  private place(x: number, y: number) {
+    const b = this.bounds();
+    this.x = Math.max(0, Math.min(b.w - b.fw, x));
+    this.y = Math.max(0, Math.min(b.h - b.fh, y));
+    this.el.style.setProperty("--x", `${this.x}px`);
+    this.el.style.setProperty("--y", `${this.y}px`);
+    // Near the left edge, the bubble goes on his right so it stays in the window.
+    this.el.classList.toggle("bubble-right", this.x < 300);
+  }
+
+  /** Puts him at his home spot, or keeps him where he was dropped (inside the window). */
+  settle() {
+    this.el.classList.add("instant");
+    if (!this.moved && this.homeSpot) {
+      const spot = this.homeSpot();
+      this.place(spot.x, spot.y);
+    } else this.place(this.x, this.y);
+    void this.el.offsetWidth;
+    window.setTimeout(() => this.el.classList.remove("instant"), 60);
+  }
+
+  /** Strolls sideways to `x`, staying at his current height. */
+  async walkTo(x: number) {
     if (reducedMotion() || this.current === "held") return;
-    const target = Math.max(0, Math.min(this.maxOffset(), offset));
-    const distance = Math.abs(target - this.offset);
+    const b = this.bounds();
+    const target = Math.max(0, Math.min(b.w - b.fw, x));
+    const distance = Math.abs(target - this.x);
     if (distance < 8) return;
     const ms = Math.min(4000, distance * 9);
-    this.el.classList.toggle("facing-left", target > this.offset);
+    this.el.classList.toggle("facing-left", target < this.x);
     this.el.style.setProperty("--walk-ms", `${ms}ms`);
     this.el.classList.add("walking");
     this.setPose("walk");
-    this.place(target);
+    this.place(target, this.y);
     clearTimeout(this.walkTimer);
     await new Promise<void>((r) => (this.walkTimer = window.setTimeout(r, ms)));
     this.el.classList.remove("walking", "facing-left");
     if (this.current === "walk") this.setPose("idle");
   }
 
+  /** A short stroll within the area he's standing in. */
   wander() {
-    const max = this.maxOffset();
-    if (!max || window.innerWidth < 640) return;
-    const target = this.offset > max / 3 ? Math.random() * max * 0.2 : max * (0.25 + Math.random() * 0.35);
-    void this.walkTo(target);
-  }
-
-  home() {
-    void this.walkTo(0);
+    if (window.innerWidth < 640) return;
+    const centre = this.x + this.width / 2;
+    const area = this.regions?.().find((r) => centre >= r.left && centre <= r.right) ?? { left: 0, right: this.bounds().w };
+    const span = area.right - area.left - this.width - 24;
+    if (span < 40) return;
+    void this.walkTo(area.left + 12 + Math.random() * span);
   }
 
   private bindPointer() {
     let startX = 0;
     let startY = 0;
-    let startOffset = 0;
+    let fromX = 0;
+    let fromY = 0;
     let dragging = false;
     let down = false;
 
@@ -331,7 +356,8 @@ export class Vink {
       dragging = false;
       startX = e.clientX;
       startY = e.clientY;
-      startOffset = this.offset;
+      fromX = this.x;
+      fromY = this.y;
       this.figure.setPointerCapture(e.pointerId);
     });
     this.figure.addEventListener("pointermove", (e) => {
@@ -346,7 +372,7 @@ export class Vink {
         this.setPose("held");
         void this.say("Whoa — easy!", 2000);
       }
-      if (dragging) this.place(startOffset - dx, Math.max(-70, Math.min(0, dy - 18)));
+      if (dragging) this.place(fromX + dx, fromY - dy);
     });
     const release = () => {
       if (!down) return;
@@ -355,9 +381,9 @@ export class Vink {
         this.poke();
         return;
       }
+      this.moved = true;
       this.el.classList.remove("dragging");
       this.el.classList.add("landing");
-      this.place(this.offset, 0);
       this.setPose("idle");
       window.setTimeout(() => this.el.classList.remove("landing"), 450);
       this.onDrag?.();

@@ -15,7 +15,7 @@ import { setupPlay } from "./play";
 import { Shell } from "./shell";
 import { currentTheme, initTheme, onThemeChange, setTheme } from "./theme";
 import { h, icon } from "./ui";
-import { welcome } from "./views";
+import { exploreIndex, welcome } from "./views";
 
 initTheme();
 
@@ -105,7 +105,12 @@ async function startShell() {
     ...["tldr", "projects", "about", "experience", "skills", "contact", "help"].map((c) => h("button", { type: "button", "data-run": c }, c)),
   );
 
-  const win = h("div", { class: "window" }, titlebar, scroller, quickbar, shell.composer, statusbar);
+  // On wide screens explore lives in a side panel, so it stays put while answers scroll.
+  const sidebar = h("aside", { class: "sidebar" }, exploreIndex());
+  // The left column holds the conversation, the prompt and the status bar; the side panel runs to the bottom.
+  const mainCol = h("div", { class: "main-col" }, scroller, quickbar, shell.composer, statusbar);
+  const workspace = h("div", { class: "workspace" }, mainCol, sidebar);
+  const win = h("div", { class: "window" }, titlebar, workspace);
   const glow = h("div", { class: "glow", "aria-hidden": "true" });
   app.append(glow, win);
   const neural = new NeuralBackground(glow);
@@ -159,8 +164,8 @@ async function startShell() {
     shell.focus();
   });
 
+  // No auto-focus: the prompt stays quiet until someone types (keys anywhere land in it).
   shell.addToFeed(welcome());
-  shell.focus();
   const activityReady = loadActivity().then(() => fillPlaceholders());
 
   // Deep links: /?cmd=projects  or  /?q=what+is+ternodbi

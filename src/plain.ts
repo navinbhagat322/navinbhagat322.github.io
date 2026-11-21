@@ -25,6 +25,7 @@ export function renderPlain(root: HTMLElement) {
         h("h1", {}, profile.name),
         h("p", { class: "plain-role" }, `${profile.role} at ${profile.company} (${profile.project}) · ${profile.education}`),
         h("p", { class: "plain-tagline" }, profile.tagline),
+        h("p", { class: "plain-looking" }, h("strong", {}, profile.looking), ` · ${profile.location}`),
         h(
           "div",
           { class: "plain-actions" },

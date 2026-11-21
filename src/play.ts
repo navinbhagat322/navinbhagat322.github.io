@@ -41,7 +41,53 @@ const FIRST_TIME: Record<string, Child[]> = {
 export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLElement) {
   const game = new Game();
   const vink = new Vink();
-  shell.composer.append(vink.el);
+  windowEl.append(vink.el);
+  // Home: in the space to the right of the prompt box, standing level with it. Without room there
+  // (narrow screens, phones), he stands on the prompt's right end instead.
+  // In window pixels, undoing any scale from the window's opening animation.
+  const rel = (el: Element) => {
+    const w = windowEl.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    const k = windowEl.offsetWidth / (w.width || 1);
+    return {
+      left: (r.left - w.left) * k,
+      right: (r.right - w.left) * k,
+      top: (r.top - w.top) * k,
+      bottom: (r.bottom - w.top) * k,
+      height: windowEl.offsetHeight,
+    };
+  };
+  const shown = (sel: string) => {
+    const el = windowEl.querySelector<HTMLElement>(sel);
+    return el && el.offsetWidth ? el : null;
+  };
+  /** The empty strip between the prompt's right edge and the end of the left column, if he fits. */
+  const besidePrompt = () => {
+    const field = shown(".composer-field");
+    const col = shown(".main-col");
+    if (!field || !col) return null;
+    const f = rel(field);
+    const c = rel(col);
+    return c.right - f.right >= vink.width + 28 ? { left: f.right + 14, right: c.right - 14, bottom: f.bottom, height: f.height } : null;
+  };
+  vink.homeSpot = () => {
+    const gap = besidePrompt();
+    // Centred in the space between the prompt and the side panel.
+    if (gap) return { x: (gap.left + gap.right - vink.width) / 2, y: gap.height - gap.bottom - 6 };
+    const field = shown(".composer-field");
+    if (!field) return { x: 0, y: 0 };
+    const f = rel(field);
+    return { x: f.right - vink.width - 10, y: f.height - f.top - 2 };
+  };
+  vink.regions = () => {
+    const gap = besidePrompt();
+    const areas = [shown(".main-col"), shown(".sidebar")].filter((el): el is HTMLElement => !!el).map(rel);
+    return gap ? [gap, ...areas] : areas;
+  };
+  vink.settle();
+  window.addEventListener("load", () => vink.settle());
+  windowEl.addEventListener("animationend", (e) => e.target === windowEl && vink.settle());
+  new ResizeObserver(() => vink.settle()).observe(windowEl);
   // Vink stands by quietly; hints and news wait until the visitor does something.
   let summoned = false;
   const firstVisit = game.xp === 0;

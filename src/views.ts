@@ -1,7 +1,7 @@
 // Rich output rendered inside command blocks.
 
 import { experience, focusAreas, links, profile, projects, recruiter, skills, type Project } from "./content";
-import { cmd, copy, h, icon, link, type Child } from "./ui";
+import { cmd, copy, h, icon, link, reducedMotion, type Child } from "./ui";
 import { lastShipped } from "./activity";
 import { query, tables, type Result } from "./sql";
 import { vinkSVG } from "./vink";
@@ -106,6 +106,8 @@ export function aboutView(): HTMLElement {
       h("dd", {}, profile.education),
       h("dt", {}, "based in"),
       h("dd", {}, profile.location),
+      h("dt", {}, "looking"),
+      h("dd", { class: "accent" }, profile.looking),
     ),
   );
 }
@@ -218,9 +220,74 @@ export function sqlTable({ columns, rows }: Result, ms: number): HTMLElement {
   );
 }
 
+/** One tool call in the opening session: "Working…" for a beat, then the call and its result. */
+function toolStep(tool: string, args: string, working: string, at: number, result: HTMLElement): HTMLElement {
+  const done = h("span", {}, h("strong", {}, tool), h("code", {}, `(${args})`));
+  const call = h("p", { class: "ag-call" });
+  if (reducedMotion()) call.append(done);
+  else {
+    call.append(h("span", { class: "spinner", "aria-hidden": "true" }), h("span", { class: "ag-working" }, working));
+    window.setTimeout(() => call.replaceChildren(done), at * 1000);
+  }
+  return h(
+    "li",
+    { class: "ag-step ag-tool", style: `--delay:${at - 0.45}s; --at:${at}s` },
+    h("span", { class: "ag-dot ag-dot-tool", "aria-hidden": "true" }),
+    h("div", {}, call, h("div", { class: "ag-result" }, result)),
+  );
+}
+
+/** The featured work, one line each, as the second tool's result. */
+const FEATURED: [string, string, string][] = [
+  ["ternodbi", "TernoDBI", "MCP server that lets agents query databases · PyPI · 300+ commits"],
+  ["agents", "Terno agents", "multi-agent CLI that answers questions about your data · open source"],
+  ["evals", "Agent evals", "regression tests that score agent answers against SQL results"],
+  ["vink", "Vink", "YouTube transcripts → detailed notes · CLI + MCP · PyPI"],
+];
+
+/** The opening screen: who Navin is, then a short agent session that answers it. */
 export function welcome(): HTMLElement {
-  const sql = "SELECT * FROM navin;";
-  const result = query(sql);
+  const t0 = performance.now();
+  const result = query("SELECT * FROM navin");
+  const ms = performance.now() - t0;
+  const facts = h(
+    "div",
+    {},
+    h(
+      "table",
+      { class: "hq-table" },
+      h(
+        "tbody",
+        {},
+        ...result.rows.map((r, i) =>
+          h(
+            "tr",
+            { style: `--i:${i}`, class: `hq-${r.field}` },
+            h("th", { scope: "row" }, String(r.field)),
+            h("td", {}, ...(FACT_LINKS[String(r.field)]?.() ?? [String(r.value)])),
+          ),
+        ),
+      ),
+    ),
+    h("span", { class: "ag-meta" }, `${result.rows.length} rows · ${ms < 1 ? "<1" : Math.round(ms)} ms`),
+  );
+  const work = h(
+    "div",
+    {},
+    h(
+      "ul",
+      { class: "ag-work" },
+      ...FEATURED.map(([slug, name, line], i) =>
+        h(
+          "li",
+          { style: `--i:${i}` },
+          cmd(`projects ${slug}`, name, "ag-work-name"),
+          h("span", { class: "ag-work-line" }, line),
+        ),
+      ),
+    ),
+    h("span", { class: "ag-meta" }, `${FEATURED.length} of ${projects.length} projects · `, cmd("projects", "see all", "ag-more")),
+  );
   return h(
     "section",
     { class: "hero" },
@@ -235,43 +302,52 @@ export function welcome(): HTMLElement {
           "div",
           {},
           h("h1", {}, profile.name),
-          h("p", { class: "hero-role" }, `${profile.role} · ${profile.company}`),
+          h("p", { class: "hero-role" }, `${profile.role} at ${profile.company}, building ${profile.project}`),
         ),
       ),
-      h("h2", { class: "hero-claim" }, "I build AI agents and the systems that make them ", h("span", { class: "accent" }, "reliable"), "."),
       h(
-        "div",
-        { class: "hero-query" },
+        "ol",
+        { class: "agent", "aria-label": "A short agent session about Navin" },
+        h("li", { class: "ag-user", style: "--delay:0.15s" }, h("span", { class: "ag-mark", "aria-hidden": "true" }, ">"), "who is Navin?"),
+        toolStep("Query", "SELECT * FROM navin", "Querying…", 0.9, facts),
+        toolStep("Read", "projects --featured", "Reading…", 1.7, work),
         h(
-          "div",
-          { class: "hq-line" },
-          h("span", { class: "hq-prompt", "aria-hidden": "true" }, ">"),
-          h("code", {}, sql),
-        ),
-        h(
-          "table",
-          { class: "hq-table" },
+          "li",
+          { class: "ag-step ag-reply", style: "--delay:2.15s" },
+          h("span", { class: "ag-dot", "aria-hidden": "true" }),
           h(
-            "tbody",
+            "div",
             {},
-            ...result.rows.map((r, i) => h("tr", { style: `--i:${i}` }, h("th", { scope: "row" }, String(r.field)), h("td", {}, String(r.value)))),
+            h("p", {}, "Want the 30-second version, or to get in touch?"),
+            h(
+              "div",
+              { class: "hero-hurry" },
+              cmd("tldr", h("span", {}, h("em", { class: "cta-tag" }, "TL;DR"), "Read the 30-second summary"), "cta cta-main"),
+              link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email"), "cta"),
+              link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "cta"),
+            ),
           ),
         ),
-      ),
-      h(
-        "div",
-        { class: "hero-hurry" },
-        cmd("tldr", h("span", {}, h("em", { class: "cta-tag" }, "TL;DR"), "Read the 30-second summary"), "cta cta-main"),
-        link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email"), "cta"),
-        link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "cta"),
       ),
     ),
     exploreIndex(),
   );
 }
 
+/** Table cells that link somewhere; the plain text in content.ts stays the SQL value. */
+const FACT_LINKS: Record<string, () => Child[]> = {
+  proof: () => [
+    link(links.pypi, "3 packages on PyPI", "hq-link"),
+    " · ",
+    cmd("projects ternodbi", "300+ commits to TernoDBI", "hq-link"),
+    " · ",
+    cmd("projects agents", "agents in production", "hq-link"),
+  ],
+  looking: () => [h("strong", { class: "accent" }, profile.looking)],
+};
+
 /** Every section of the site, one click away. Each row shows the command it runs. */
-function exploreIndex(): HTMLElement {
+export function exploreIndex(): HTMLElement {
   const rows: [string, string, Child, string][] = [
     ["box", "Projects", `${projects.length} things I've built · agents, evals, TernoDBI`, "projects"],
     ["branch", "Experience", "CloudxLab · Scientific Investing · Tata Steel", "experience"],
@@ -286,7 +362,7 @@ function exploreIndex(): HTMLElement {
   return h(
     "nav",
     { class: "explore", "aria-label": "Explore the site" },
-    h("div", { class: "explore-head" }, h("span", {}, "explore"), h("span", {}, "click, or type the command")),
+    h("div", { class: "explore-head" }, h("span", {}, "explore")),
     h(
       "ul",
       {},
@@ -296,7 +372,7 @@ function exploreIndex(): HTMLElement {
           {},
           h(
             "button",
-            { type: "button", class: "explore-row", "data-run": run },
+            { type: "button", class: "explore-row", "data-run": run, title: typeof sub === "string" ? sub : undefined },
             h("span", { class: "explore-icon", "aria-hidden": "true" }, icon(ic, 15)),
             h("span", { class: "explore-text" }, h("strong", {}, title), h("span", {}, sub)),
             h("code", { class: "explore-cmd" }, run.split(" ")[0]),
