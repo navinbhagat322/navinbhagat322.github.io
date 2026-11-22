@@ -20,6 +20,7 @@ import { exploreIndex, welcome } from "./views";
 initTheme();
 
 const app = document.getElementById("app")!;
+app.replaceChildren(); // drop the crawler-readable copy baked in at build time
 const params = new URLSearchParams(location.search);
 
 if (params.has("plain")) renderPlain(app);
