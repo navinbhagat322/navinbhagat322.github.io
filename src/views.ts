@@ -271,7 +271,7 @@ export function welcome(): HTMLElement {
             "tr",
             { style: `--i:${i}`, class: `hq-${r.field}` },
             h("th", { scope: "row" }, String(r.field)),
-            h("td", {}, ...(FACT_LINKS[String(r.field)]?.() ?? [String(r.value)])),
+            h("td", {}, ...(FACT_LINKS[String(r.field)]?.() ?? items(String(r.value).split(" · ")))),
           ),
         ),
       ),
@@ -347,15 +347,24 @@ export function welcome(): HTMLElement {
 
 /** Table cells that link somewhere; the plain text in content.ts stays the SQL value. */
 const FACT_LINKS: Record<string, () => Child[]> = {
-  proof: () => [
-    link(links.pypi, "3 packages on PyPI", "hq-link"),
-    " · ",
-    cmd("projects ternodbi", "300+ commits to TernoDBI", "hq-link"),
-    " · ",
-    cmd("projects agents", "agents in production", "hq-link"),
-  ],
+  proof: () =>
+    items([
+      link(links.pypi, "3 packages on PyPI", "hq-link"),
+      cmd("projects ternodbi", "300+ commits to TernoDBI", "hq-link"),
+      cmd("projects agents", "agents in production", "hq-link"),
+    ]),
   looking: () => [h("strong", { class: "accent" }, profile.looking)],
 };
+
+/** A "·"-separated list whose items never break mid-phrase; lines wrap between items. */
+function items(parts: Child[]): Child[] {
+  // The space after each "·" is where a line may break, so the dot ends the line it's on.
+  return parts.flatMap((part, i) => [
+    i ? h("span", { class: "hq-sep", "aria-hidden": "true" }, "·") : null,
+    i ? " " : null,
+    h("span", { class: "hq-item" }, part),
+  ]);
+}
 
 /** Every section of the site, one click away. Each row shows the command it runs. */
 export function exploreIndex(): HTMLElement {

@@ -909,6 +909,17 @@ code {
   animation: row-in 0.3s calc(var(--at, 1s) + var(--i) * 0.08s) ease-out both;
 }
 
+/* list items stay whole; lines wrap between them, at the soft separator */
+.hq-item {
+  white-space: nowrap;
+}
+
+.hq-sep {
+  margin-left: 0.55em;
+  margin-right: 0.2em;
+  color: var(--faint);
+}
+
 .hq-link {
   padding: 0;
   border: 0;
@@ -3948,5 +3959,28 @@ body.plain-mode #app {
 
   .title-search .kbd-btn {
     width: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Phones: values read in the body font so lines wrap cleanly; labels stay small mono. */
+  .agent .hq-table td,
+  .agent .ag-work-line,
+  .agent .ag-reply p {
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .agent .hq-table th,
+  .agent .ag-work-name {
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  .agent .ag-work > li + li {
+    margin-top: 6px;
   }
 }
