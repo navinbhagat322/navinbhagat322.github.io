@@ -15,7 +15,7 @@ export const profile = {
   location: "Pune, India",
   looking: "Open to AI engineering roles",
   tagline:
-    "I build AI agents and the systems around them — agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.",
+    "Builds AI agents and the systems around them — agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.",
   education: "B.Tech, IIT Jodhpur",
   focus: ["AI agents", "agent evals", "RAG", "MCP", "text-to-SQL"],
   offline: ["film-making", "photography", "fitness", "meditation"],
@@ -283,7 +283,7 @@ export const skills: Skill[] = [
 /** The 30-second version, for people who don't want to explore. */
 export const recruiter = {
   pitch:
-    "AI Software Engineer at CloudxLab, building Terno AI. I build production AI agents and the systems around them — evals, memory, MCP and safe SQL execution.",
+    "AI Software Engineer at CloudxLab, building Terno AI. Builds production AI agents and the systems around them — evals, memory, MCP and safe SQL execution.",
   highlights: [
     {
       title: "AI agents in production",

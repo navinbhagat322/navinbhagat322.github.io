@@ -70,6 +70,7 @@ export class Shell {
   readonly feed: HTMLElement;
   readonly composer: HTMLElement;
   private readonly input: HTMLInputElement;
+  private readonly send: HTMLButtonElement;
   private readonly overlay: HTMLElement;
   private readonly popover: HTMLElement;
   private readonly commands = new Map<string, Command>();
@@ -107,6 +108,16 @@ export class Shell {
     });
     this.overlay = h("div", { class: "composer-overlay", "aria-hidden": "true" });
     this.popover = h("div", { class: "popover", id: "suggestions", role: "listbox", hidden: true });
+    this.send = h(
+      "button",
+      { type: "button", class: "composer-send", "aria-label": "Send", title: "Send (Enter)" },
+      h("span", { "aria-hidden": "true" }, "↑"),
+    );
+    this.send.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (this.input.value.trim()) void this.run(this.input.value);
+      this.input.focus({ preventScroll: true });
+    });
     this.composer = h(
       "div",
       { class: "composer" },
@@ -116,7 +127,7 @@ export class Shell {
         { class: "composer-field" },
         h("span", { class: "composer-chevron", "aria-hidden": "true" }, ">"),
         h("span", { class: "composer-stack" }, this.overlay, this.input),
-        h("span", { class: "composer-hint" }, h("kbd", {}, "↵"), " run"),
+        this.send,
       ),
     );
 
@@ -317,9 +328,10 @@ export class Shell {
     this.overlay.replaceChildren(
       this.highlight(value),
       this.ghost ? h("span", { class: "ghost" }, this.ghost.slice(value.length)) : "",
-      !value ? h("span", { class: "placeholder" }, "type a command, or ask anything about me…") : "",
+      !value ? h("span", { class: "placeholder" }, placeholder()) : "",
     );
     this.overlay.scrollLeft = this.input.scrollLeft;
+    this.send.classList.toggle("ready", !!value.trim());
     if (withPopover && document.activeElement === this.input) this.updatePopover(value);
     else this.closePopover();
   }
@@ -460,4 +472,11 @@ export class Shell {
       if (e.key === "ArrowLeft" || e.key === "Home" || e.key === "End") this.refresh(false);
     });
   }
+}
+
+/** What the prompt invites, shorter on phones. */
+function placeholder(): string {
+  return window.matchMedia("(max-width: 640px)").matches
+    ? "Ask Vink about Navin…"
+    : "Ask Vink about Navin's projects, skills or availability — or type a command";
 }

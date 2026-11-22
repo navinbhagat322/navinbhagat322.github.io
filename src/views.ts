@@ -85,13 +85,13 @@ export function aboutView(): HTMLElement {
     h(
       "div",
       { class: "about-text" },
-      h("p", { class: "lede" }, `I'm ${profile.name}, an ${profile.role} at ${profile.company}, building ${profile.project}. ${profile.tagline}`),
+      h("p", { class: "lede" }, `${profile.name} is an ${profile.role} at ${profile.company}, building ${profile.project}. He builds AI agents and the systems around them: agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.`),
       h(
         "p",
         {},
         "Day to day that means building agents (LangChain, CrewAI, AutoGen, the OpenAI SDK and custom ones), the evaluation framework that keeps them honest, their RAG memory, and the MCP layer they use to reach databases — including ",
         link("https://github.com/terno-ai/ternodbi", "TernoDBI"),
-        ", which I published on PyPI, and contributed to the open-source Terno agent. On the side I built Vink, a YouTube-to-notes tool on PyPI. Before that I shipped CloudxLab's PyQuest app, built a financial RAG assistant at Scientific Investing, did materials R&D at Tata Steel, and studied at IIT Jodhpur.",
+        ", which he published on PyPI, and he contributes to the open-source Terno agent. On the side he built Vink, a YouTube-to-notes tool on PyPI. Before that he shipped CloudxLab's PyQuest app, built a financial RAG assistant at Scientific Investing, did materials R&D at Tata Steel, and studied at IIT Jodhpur.",
       ),
       h("p", { class: "muted" }, `Off-screen: ${profile.offline.join(", ")}.`),
     ),
@@ -220,6 +220,13 @@ export function sqlTable({ columns, rows }: Result, ms: number): HTMLElement {
   );
 }
 
+/** Vink's face beside the reply: he's the agent doing the talking. */
+function vinkMark(): HTMLElement {
+  const el = h("span", { class: "ag-vink", role: "img", "aria-label": "Vink" });
+  el.innerHTML = vinkSVG("head");
+  return el;
+}
+
 /** One tool call in the opening session: "Working…" for a beat, then the call and its result. */
 function toolStep(tool: string, args: string, working: string, at: number, result: HTMLElement): HTMLElement {
   const done = h("span", {}, h("strong", {}, tool), h("code", {}, `(${args})`));
@@ -307,7 +314,12 @@ export function welcome(): HTMLElement {
           "div",
           {},
           h("h1", {}, profile.name),
-          h("p", { class: "hero-role" }, `${profile.role} at ${profile.company}, building ${profile.project}`),
+          h(
+            "p",
+            { class: "hero-role" },
+            h("span", { class: "role-long" }, `${profile.role} at ${profile.company}, building ${profile.project}`),
+            h("span", { class: "role-short" }, `${profile.role} · ${profile.company}`),
+          ),
         ),
       ),
       h(
@@ -319,17 +331,26 @@ export function welcome(): HTMLElement {
         h(
           "li",
           { class: "ag-step ag-reply", style: "--delay:2.15s" },
-          h("span", { class: "ag-dot", "aria-hidden": "true" }),
+          vinkMark(),
           h(
             "div",
             {},
-            h("p", {}, "Want the 30-second version, or to get in touch?"),
+            h("p", {}, "Want Navin's 30-second summary, to reach him, or to ask me more?"),
             h(
               "div",
               { class: "hero-hurry" },
               cmd("tldr", h("span", {}, h("em", { class: "cta-tag" }, "TL;DR"), "Read the 30-second summary"), "cta cta-main"),
               link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email"), "cta"),
               link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "cta"),
+            ),
+            // Follow-ups the agent answers well; each reads like a user turn you can send.
+            h(
+              "div",
+              { class: "ag-suggest", "aria-label": "Suggested questions" },
+              h("span", { class: "ag-suggest-label" }, "try asking"),
+              ...["What is TernoDBI?", "What's his tech stack?", "How do I reach him?"].map((q) =>
+                h("button", { type: "button", class: "ag-ask", "data-run": q }, h("span", { "aria-hidden": "true" }, ">"), q),
+              ),
             ),
           ),
         ),
@@ -354,13 +375,13 @@ const FACT_LINKS: Record<string, () => Child[]> = {
 /** Every section of the site, one click away. Each row shows the command it runs. */
 export function exploreIndex(): HTMLElement {
   const rows: [string, string, Child, string][] = [
-    ["box", "Projects", `${projects.length} things I've built · agents, evals, TernoDBI`, "projects"],
+    ["box", "Projects", `${projects.length} projects · agents, evals, TernoDBI`, "projects"],
     ["branch", "Experience", "CloudxLab · Scientific Investing · Tata Steel", "experience"],
     ["command", "Skills", `${skills.length} tools · Python, SQL, LangChain, MCP`, "skills"],
     ["network", "How it fits", "the whole system, end to end", "stack"],
     ["github", "Shipping", h("span", { "data-activity": "count" }, "public commits, straight from GitHub"), "activity"],
-    ["chat", "Ask me anything", "answers in plain English", "ask what does navin work on?"],
-    ["database", "Query with SQL", `${Object.keys(tables).length} tables of me · try SHOW TABLES`, "sql SHOW TABLES"],
+    ["chat", "Ask Vink", "questions about Navin, in plain English", "ask what does navin work on?"],
+    ["database", "Query with SQL", `${Object.keys(tables).length} tables · try SHOW TABLES`, "sql SHOW TABLES"],
     ["mail", "Contact", "email · LinkedIn · GitHub · PyPI", "contact"],
     ["trophy", "Quests", "play along and level up", "quests"],
   ];

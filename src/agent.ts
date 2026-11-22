@@ -6,6 +6,7 @@ import { links, profile, projects } from "./content";
 import type { Ctx } from "./shell";
 import { query } from "./sql";
 import { cmd, h, icon, link, reducedMotion, sleep, type Child } from "./ui";
+import { vinkSVG } from "./vink";
 import { sqlTable } from "./views";
 
 interface Intent {
@@ -24,7 +25,7 @@ const intents: Intent[] = [
     keywords: /\b(ternodbi|dbi|mcp|connector|connectors|data layer|oauth)\b/gi,
     answer: () => [
       h("strong", {}, "TernoDBI"),
-      ` is one part of his work at Terno AI: an open-source MCP server (on PyPI) where Navin is the top contributor (300+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
+      ` is one part of Navin's work at Terno AI: an open-source MCP server (on PyPI) where he's the top contributor (300+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
       cmd("projects ternodbi", "Full details →"),
     ],
   },
@@ -42,7 +43,7 @@ const intents: Intent[] = [
     keywords: /\b(projects?|built|build|made|portfolio|open.?source|github|side|agents?|evals?|rag|memory)\b/gi,
     sql: "SELECT name, kind, year FROM projects ORDER BY year DESC LIMIT 5",
     answer: () => [
-      "At Terno AI he builds ",
+      "At Terno AI, Navin builds ",
       h("strong", {}, "AI agents"),
       " (LangChain, CrewAI, AutoGen, OpenAI SDK and custom), the ",
       h("strong", {}, "evaluation framework"),
@@ -57,7 +58,7 @@ const intents: Intent[] = [
     keywords: /\b(experience|jobs?|work(ed|s|ing)?|intern(ship)?|compan(y|ies)|career|employ|currently|now)\b/gi,
     sql: "SELECT org, title, kind FROM experience WHERE kind != 'education'",
     answer: () => [
-      `He's an ${profile.role} at ${profile.company}, building ${profile.project} — agents, evals, RAG memory and MCP. Before that: an SDE internship at CloudxLab (the PyQuest app), an AI internship at Scientific Investing, and R&D at Tata Steel. `,
+      `Navin is an ${profile.role} at ${profile.company}, building ${profile.project} — agents, evals, RAG memory and MCP. Before that: an SDE internship at CloudxLab (the PyQuest app), an AI internship at Scientific Investing, and R&D at Tata Steel. `,
       cmd("experience", "Timeline →"),
     ],
   },
@@ -67,7 +68,7 @@ const intents: Intent[] = [
     sql: "SELECT area, name FROM skills WHERE area = 'ai / ml'",
     showTable: false,
     answer: () => [
-      "Python (expert) and SQL every day; LangChain, CrewAI, AutoGen, MCP, RAG and text-to-SQL for agents; PyTorch, Hugging Face and scikit-learn for ML; Django, Celery, React and Flutter for apps; Docker and AWS to ship it. ",
+      "Navin uses Python and SQL every day; LangChain, CrewAI, AutoGen, MCP, RAG and text-to-SQL for agents; PyTorch, Hugging Face and scikit-learn for ML; Django, Celery, React and Flutter for apps; Docker and AWS to ship it. ",
       cmd("skills", "Full list →"),
     ],
   },
@@ -75,7 +76,7 @@ const intents: Intent[] = [
     name: "education",
     keywords: /\b(educat\w*|stud(y|ied)|college|university|degree|iit|jodhpur|cgpa|gpa|b\.?tech)\b/gi,
     sql: "SELECT org, title FROM experience WHERE kind = 'education'",
-    answer: () => [`${profile.education}, CGPA 8.15.`],
+    answer: () => ["Navin did his B.Tech at IIT Jodhpur, CGPA 8.15."],
   },
   {
     name: "contact",
@@ -94,7 +95,7 @@ const intents: Intent[] = [
     name: "hobbies",
     keywords: /\b(hobb\w*|films?|movies?|photo\w*|fitness|gym|meditat\w*|free time|fun|offline|youtube|instagram)\b/gi,
     answer: () => [
-      `Off-screen he makes films, and is into ${profile.offline.slice(1).join(", ")}. The films are on `,
+      `Off-screen Navin makes films, and he's into ${profile.offline.slice(1).join(", ")}. The films are on `,
       link(links.youtube, "YouTube"),
       ".",
     ],
@@ -102,7 +103,7 @@ const intents: Intent[] = [
   {
     name: "about",
     keywords: /\b(who|about|yourself|navin|introduce|summary|tl;?dr|focus|interests?)\b/gi,
-    answer: () => [`${profile.name} — ${profile.role} at ${profile.company} (${profile.project}). ${profile.tagline} `, cmd("about", "More →")],
+    answer: () => [`${profile.name} is an ${profile.role} at ${profile.company}, building ${profile.project}. He builds AI agents and the systems around them: agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL. `, cmd("about", "More →")],
   },
 ];
 
@@ -145,11 +146,11 @@ export async function ask(question: string, ctx: Ctx) {
       h(
         "div",
         { class: "answer" },
-        h("span", { class: "answer-icon" }, icon("sparkle", 15)),
+        vinkFace(),
         h(
           "p",
           {},
-          "I'm a small rule-based agent, so I only know about Navin: his projects, experience, skills, education and how to reach him. Try ",
+          "I'm Vink, a small rule-based agent, so I only know about Navin: his projects, experience, skills, education and how to reach him. Try ",
           cmd("ask what is ternodbi?"),
           " or ",
           cmd("help"),
@@ -175,7 +176,14 @@ export async function ask(question: string, ctx: Ctx) {
 
   done = step(ctx, steps, "answer", "writing");
   await done();
-  ctx.add(h("div", { class: "answer" }, h("span", { class: "answer-icon" }, icon("sparkle", 15)), h("p", {}, ...intent.answer())));
+  ctx.add(h("div", { class: "answer" }, vinkFace(), h("p", {}, ...intent.answer())));
+}
+
+/** Vink's face marks every answer, so it's clear who is speaking. */
+function vinkFace(): HTMLElement {
+  const el = h("span", { class: "answer-icon answer-vink", role: "img", "aria-label": "Vink" });
+  el.innerHTML = vinkSVG("head");
+  return el;
 }
 
 /** Does unknown input read like a question rather than a mistyped command? */

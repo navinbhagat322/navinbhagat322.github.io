@@ -29,7 +29,7 @@ export function renderPlain(root: HTMLElement) {
         h(
           "div",
           { class: "plain-actions" },
-          link(`mailto:${links.email}`, h("span", {}, icon("mail", 15), "Email me"), "btn primary"),
+          link(`mailto:${links.email}`, h("span", {}, icon("mail", 15), "Email Navin"), "btn primary"),
           link(links.github, h("span", {}, icon("github", 15), "GitHub"), "btn"),
           link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "btn"),
           h("a", { href: "./", class: "btn ghost" }, "❯ open the terminal"),

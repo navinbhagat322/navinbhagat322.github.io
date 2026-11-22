@@ -85,7 +85,7 @@ export function systemDiagram(): HTMLElement {
     h(
       "div",
       { class: "sys-head" },
-      h("span", { class: "sys-kicker" }, "What I build — end to end"),
+      h("span", { class: "sys-kicker" }, "What Navin builds — end to end"),
       h("span", { class: "sys-hint" }, "click any part"),
     ),
     grid,
@@ -125,7 +125,7 @@ export function systemDiagram(): HTMLElement {
         el.classList.add("lit");
       });
       links.forEach((el) => el.classList.remove("flow"));
-      caption.textContent = "Agents, memory, MCP, TernoDBI, guardrails and evals — I've built every part of it.";
+      caption.textContent = "Agents, memory, MCP, TernoDBI, guardrails and evals — Navin has built every part of it.";
       return;
     }
     show(step);
@@ -134,7 +134,7 @@ export function systemDiagram(): HTMLElement {
   if (reducedMotion()) {
     nodes.forEach((el) => el.classList.add("lit"));
     links.forEach((el) => el.classList.add("lit"));
-    caption.textContent = "Agents, memory, MCP, TernoDBI, guardrails and evals — I've built every part of it.";
+    caption.textContent = "Agents, memory, MCP, TernoDBI, guardrails and evals — Navin has built every part of it.";
   } else {
     show(0);
     window.setInterval(tick, 1500);

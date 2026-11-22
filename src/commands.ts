@@ -88,9 +88,9 @@ export const commands: Command[] = [
   },
   {
     name: "stack",
-    summary: "how everything I build fits together, animated",
+    summary: "how everything Navin builds fits together, animated",
     group: "explore",
-    aliases: ["system", "architecture", "how"],
+    aliases: ["system", "architecture"],
     run: ({ add }) => void add(systemDiagram()),
   },
   {
@@ -134,7 +134,7 @@ export const commands: Command[] = [
   },
   {
     name: "activity",
-    summary: "what I shipped this week, live from GitHub",
+    summary: "what Navin shipped this week, live from GitHub",
     group: "explore",
     aliases: ["shipped", "commits", "log"],
     run: async ({ add, out }) => {
@@ -148,14 +148,14 @@ export const commands: Command[] = [
   },
   {
     name: "about",
-    summary: "who I am and what I do",
+    summary: "who Navin is and what he does",
     group: "explore",
     aliases: ["whoami"],
     run: ({ add }) => void add(aboutView()),
   },
   {
     name: "projects",
-    summary: "things I've built",
+    summary: "things Navin has built",
     usage: "[name | --featured | --work | --personal]",
     group: "explore",
     aliases: ["work"],
@@ -192,7 +192,7 @@ export const commands: Command[] = [
   },
   {
     name: "experience",
-    summary: "where I've worked and studied",
+    summary: "where Navin has worked and studied",
     group: "explore",
     aliases: ["exp", "journey"],
     run: ({ add }) => void add(timeline()),
@@ -206,20 +206,20 @@ export const commands: Command[] = [
   },
   {
     name: "contact",
-    summary: "how to reach me",
+    summary: "how to reach Navin",
     group: "explore",
     aliases: ["socials", "links"],
     run: ({ add }) => void add(contactView()),
   },
   {
     name: "ask",
-    summary: "ask anything about me, in English",
+    summary: "ask Vink anything about Navin, in English",
     usage: "<question>",
     group: "tools",
     run: async (ctx) => {
       if (!ctx.raw) {
-        ctx.out(h("span", { class: "muted" }, "ask me something, or just type a question at the prompt:"));
-        ["ask what does navin work on?", "ask how do I contact him?", "ask what is ternodbi?", "ask what's his stack?"].forEach((q) =>
+        ctx.out(h("span", { class: "muted" }, "ask Vink something, or just type a question at the prompt:"));
+        ["ask what does navin work on?", "ask how do I reach him?", "ask what is ternodbi?", "ask what's his stack?"].forEach((q) =>
           ctx.out("  ", cmd(q)),
         );
         return;
@@ -229,7 +229,7 @@ export const commands: Command[] = [
   },
   {
     name: "sql",
-    summary: "query my résumé with SQL",
+    summary: "query Navin's résumé with SQL",
     usage: "<query>",
     group: "tools",
     complete: () => ["SELECT", "SHOW TABLES", "DESCRIBE", ...Object.keys(tables)],

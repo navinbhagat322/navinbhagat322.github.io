@@ -18,7 +18,7 @@ export const quests: Quest[] = [
   { id: "explorer", icon: "compass", title: "Explorer", desc: "Open about, projects, experience, skills and contact", xp: 50, goal: EXPLORE_COMMANDS.length },
   { id: "deep-dive", icon: "search", title: "Deep dive", desc: "Open a project's details", xp: 20 },
   { id: "query", icon: "database", title: "Query wizard", desc: "Run a SQL query against the résumé", xp: 30 },
-  { id: "shipped", icon: "box", title: "Fresh commits", desc: "Check what Navin shipped this week", xp: 10 },
+  { id: "shipped", icon: "box", title: "Fresh commits", desc: "See what Navin shipped this week", xp: 10 },
   { id: "curious", icon: "chat", title: "Curious mind", desc: "Ask Vink 3 questions in plain English", xp: 30, goal: 3 },
   { id: "palette", icon: "command", title: "Power user", desc: "Open the ⌘K command palette", xp: 20 },
   { id: "hacker", icon: "file", title: "Poking around", desc: "Read a file with cat", xp: 15 },

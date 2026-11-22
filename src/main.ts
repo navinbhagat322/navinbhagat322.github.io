@@ -33,7 +33,7 @@ async function startShell() {
     "projects ternodbi",
     "ask what is ternodbi?",
     "ask what does navin work on?",
-    "ask how do I contact him?",
+    "ask how do I reach him?",
     "sql SELECT name, year FROM projects ORDER BY year DESC",
     "sql SHOW TABLES",
     "sudo hire navin",

@@ -84,10 +84,23 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     const areas = [shown(".main-col"), shown(".sidebar")].filter((el): el is HTMLElement => !!el).map(rel);
     return gap ? [gap, ...areas] : areas;
   };
+  // Phones have no free space for him, so he waits until someone taps the avatar.
+  const small = () => window.matchMedia("(max-width: 640px)").matches;
+  let tucked = small();
+  vink.el.hidden = tucked;
+  const bringOut = () => {
+    if (!vink.el.hidden) return;
+    tucked = false;
+    vink.el.hidden = false;
+    vink.settle();
+  };
   vink.settle();
   window.addEventListener("load", () => vink.settle());
   windowEl.addEventListener("animationend", (e) => e.target === windowEl && vink.settle());
-  new ResizeObserver(() => vink.settle()).observe(windowEl);
+  new ResizeObserver(() => {
+    if (tucked && !small()) bringOut();
+    vink.settle();
+  }).observe(windowEl);
   // Vink stands by quietly; hints and news wait until the visitor does something.
   let summoned = false;
   const firstVisit = game.xp === 0;
@@ -110,7 +123,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   const phone = () => window.matchMedia("(max-width: 640px)").matches;
   let muted = load(MUTE_KEY) === "1";
   const chat = (content: Child | Child[], ms?: number) => {
-    if (!muted) void vink.say(content, ms);
+    if (!muted && !vink.el.hidden) void vink.say(content, ms);
   };
 
   const toasts = h("div", { class: "toasts", "aria-live": "polite" });
@@ -182,7 +195,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     const after = game.level();
     if (quiet) return;
 
-    if (game.complete && !muted) {
+    if (game.complete && !muted && !vink.el.hidden) {
       vink.setPose("celebrate", 5000);
       vink.confetti(windowEl);
       void vink.say(
@@ -191,7 +204,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
       );
       return;
     }
-    if (after.number > before && !muted) {
+    if (after.number > before && !muted && !vink.el.hidden) {
       vink.setPose("celebrate", 2400);
       void vink.say([`Level up! You're now ${/^[aeiou]/i.test(after.title) ? "an" : "a"} `, h("strong", {}, after.title), ". ", cmd("quests"), " shows what's left."], 5000);
       return;
@@ -352,7 +365,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     }, 12_000);
   });
 
-  return { game, vink, commands: playCommands(game, vink, windowEl, setMuted) };
+  return { game, vink, commands: playCommands(game, vink, windowEl, setMuted, bringOut) };
 }
 
 /** Level number for an arbitrary XP total, to spot level-ups. */
@@ -402,7 +415,7 @@ function questView(game: Game): HTMLElement {
   );
 }
 
-function playCommands(game: Game, vink: Vink, windowEl: HTMLElement, setMuted: (on: boolean) => void): Command[] {
+function playCommands(game: Game, vink: Vink, windowEl: HTMLElement, setMuted: (on: boolean) => void, bringOut: () => void): Command[] {
   const actions: Record<string, Pose | "hide" | "show" | "quiet" | "talk"> = {
     wave: "wave",
     dance: "dance",
@@ -444,6 +457,7 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement, setMuted: (
       run: ({ args, out, error }) => {
         const action = args[0]?.toLowerCase();
         if (!action) {
+          bringOut();
           vink.setPose("wave", 1600);
           void vink.say("That's me! Poke me, drag me around, ask me things, or tell me what to do.", 4000);
           out("Vink is Navin's illustrated twin. He lives on the command bar, reacts to what you do, follows your cursor with his eyes and hands out quests. Pick him up and move him if he's in the way, or close any of his bubbles with × to keep him quiet.");
@@ -473,7 +487,7 @@ function playCommands(game: Game, vink: Vink, windowEl: HTMLElement, setMuted: (
           return;
         }
         if (pose === "show") {
-          vink.el.hidden = false;
+          bringOut();
           vink.setPose("wave", 1500);
           void vink.say("Missed me?", 2500);
           return;

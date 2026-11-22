@@ -2,21 +2,21 @@
 
 :root,
 :root[data-theme="dark"] {
-  --bg: #09090b;
-  --window: rgba(17, 17, 21, 0.86);
+  --bg: #0b0a09;
+  --window: rgba(16, 15, 13, 0.9);
   --chrome: rgba(255, 255, 255, 0.025);
   --card: rgba(255, 255, 255, 0.03);
   --card-hover: rgba(255, 255, 255, 0.055);
   --input: rgba(255, 255, 255, 0.04);
-  --popover: #18181d;
+  --popover: #1a1916;
   --hover: rgba(255, 255, 255, 0.035);
   --hover-strong: rgba(255, 255, 255, 0.07);
   --line: rgba(255, 255, 255, 0.075);
   --line-strong: rgba(255, 255, 255, 0.14);
-  --fg: #ececf1;
-  --fg-soft: #c4c4cc;
-  --muted: #8a8a96;
-  --faint: #55555f;
+  --fg: #efebe3;
+  --fg-soft: #cdc7bc;
+  --muted: #969083;
+  --faint: #7c766c;
   /* warm arcade palette: gold → orange */
   --accent: #facc15;
   --accent-soft: rgba(250, 204, 21, 0.13);
@@ -48,7 +48,7 @@
   --fg: #18181b;
   --fg-soft: #3f3f46;
   --muted: #71717a;
-  --faint: #a1a1aa;
+  --faint: #84848d;
   /* deeper ambers so text stays readable on white */
   --accent: #b45309;
   --accent-soft: rgba(217, 119, 6, 0.12);
@@ -631,6 +631,10 @@ code {
   letter-spacing: -0.04em;
 }
 
+.role-short {
+  display: none;
+}
+
 .hero-role {
   margin: 8px 0 0;
   color: var(--fg-soft);
@@ -641,11 +645,14 @@ code {
 
 .agent {
   display: grid;
-  gap: 18px;
-  max-width: 660px;
-  margin: 34px 0 0;
+  gap: 16px;
+  max-width: 780px;
+  margin: 30px 0 0;
   padding: 0;
   list-style: none;
+  /* one mono voice for the whole conversation, with a little air */
+  font-family: var(--mono);
+  letter-spacing: 0.01em;
 }
 
 .agent > li {
@@ -663,6 +670,7 @@ code {
 
 .ag-mark {
   color: var(--accent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .ag-step {
@@ -747,8 +755,10 @@ code {
   padding: 0 12px 0 0;
   border: 0;
   background: none;
-  color: var(--fg);
-  font: 500 15px/1.5 var(--sans);
+  /* same look as the fact labels: dim left column, bright right column */
+  color: var(--muted);
+  font: 14px/1.55 var(--mono);
+  letter-spacing: inherit;
   text-align: left;
   cursor: pointer;
   transition: color 0.15s;
@@ -759,9 +769,9 @@ code {
 }
 
 .ag-work-line {
-  color: var(--muted);
+  color: var(--fg);
   font-size: 14.5px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .ag-tags {
@@ -794,15 +804,74 @@ code {
   font: 12px var(--mono);
 }
 
+/* Vink's face beside the reply */
+.ag-vink {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-top: 0;
+  overflow: hidden;
+  border-radius: 7px;
+  background: var(--grad-tile);
+}
+
+.ag-vink svg,
+.answer-vink svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .ag-reply p {
   margin: 0;
   color: var(--fg);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14.5px;
+  line-height: 1.55;
 }
 
 .ag-reply .hero-hurry {
   margin-top: 12px;
+}
+
+/* suggested follow-ups: a quiet label, then small filled pills (no borders) */
+.ag-suggest-label {
+  margin-right: 4px;
+  color: var(--faint);
+  font: 12px var(--mono);
+}
+
+.ag-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ag-ask {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: var(--hover-strong);
+  color: var(--fg-soft);
+  font: 13px/1.4 var(--mono);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.ag-ask > span {
+  color: var(--accent);
+}
+
+.ag-ask:hover,
+.ag-ask:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  outline: none;
 }
 
 /* the facts, as the tool's result */
@@ -817,8 +886,8 @@ code {
   background: none;
   border: 0;
   color: var(--muted);
-  font: 13px/1.6 var(--mono);
-  letter-spacing: 0;
+  font: 14px/1.55 var(--mono);
+  letter-spacing: inherit;
   text-transform: none;
   vertical-align: top;
 }
@@ -826,7 +895,7 @@ code {
 .hq-table td {
   padding: 4px 0;
   color: var(--fg);
-  font: 15px/1.5 var(--sans);
+  font: 14.5px/1.55 var(--mono);
 }
 
 .hq-table tr + tr :is(th, td) {
@@ -860,6 +929,7 @@ code {
 
 .hq-looking strong {
   font-weight: 500;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .hero-hurry {
@@ -875,7 +945,7 @@ code {
   border: 0;
   background: none;
   color: var(--fg);
-  font: 500 15px var(--sans);
+  font: 500 14.5px var(--mono);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.15s;
@@ -2138,6 +2208,14 @@ td.bool {
   color: var(--accent-2);
 }
 
+.answer-vink {
+  width: 22px;
+  height: 22px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: var(--grad-tile);
+}
+
 .answer p {
   margin: 0;
   font-size: 14.5px;
@@ -2239,13 +2317,36 @@ td.bool {
   color: var(--faint);
 }
 
-.composer-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--faint);
-  white-space: nowrap;
+/* Send: quiet until there's something to send. */
+.composer-send {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 15px/1 var(--sans);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.composer-send.ready {
+  border-color: transparent;
+  background: var(--accent);
+  color: #1c1305;
+}
+
+.composer-send:hover {
+  color: var(--fg);
+}
+
+.composer-send.ready:hover {
+  color: #1c1305;
+  filter: brightness(1.08);
 }
 
 .popover {
@@ -3542,7 +3643,6 @@ body.plain-mode #app {
   }
 
   .kbd-label,
-  .composer-hint,
   .sb-clock {
     display: none;
   }
@@ -3710,7 +3810,7 @@ body.plain-mode #app {
   }
 
   .feed {
-    padding-bottom: 110px;
+    padding-bottom: 32px;
   }
 
   .toasts {
@@ -3841,12 +3941,20 @@ body.plain-mode #app {
 @media (max-height: 760px) and (min-width: 901px) {
   .hero,
   .sidebar {
-    padding-top: 22px;
+    padding-top: 16px;
   }
 
   .agent {
-    gap: 14px;
-    margin-top: 24px;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .ag-reply .hero-hurry {
+    margin-top: 8px;
+  }
+
+  .ag-suggest {
+    margin-top: 8px;
   }
 
   .hq-table :is(th, td) {
@@ -3880,5 +3988,58 @@ body.plain-mode #app {
   .ag-work > li,
   .hq-table tr {
     animation: none;
+  }
+}
+
+/* ============ phones: content, then one prompt at the bottom ============ */
+
+@media (max-width: 640px) {
+  /* The explore list and suggested questions cover these; the prompt is enough chrome. */
+  .quickbar,
+  .statusbar {
+    display: none;
+  }
+
+  .role-long {
+    display: none;
+  }
+
+  .role-short {
+    display: inline;
+  }
+
+  /* Facts: label above value, so values get the full width. */
+  .hq-table,
+  .hq-table tbody,
+  .hq-table tr,
+  .hq-table th,
+  .hq-table td {
+    display: block;
+    width: auto;
+  }
+
+  .hq-table tr + tr {
+    margin-top: 10px;
+  }
+
+  .hq-table th {
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .hq-table td {
+    padding: 0;
+  }
+
+  .main-col .composer {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 640px) {
+  /* On phones the label sits on its own line above the pills. */
+  .ag-suggest-label {
+    flex-basis: 100%;
   }
 }
