@@ -23,9 +23,9 @@ export const profile = {
 
 /** The opening screen's facts, served as the `navin` SQL table. */
 export const facts: [string, string][] = [
-  ["builds", "AI agents · MCP servers · RAG memory · evals · safe text-to-SQL"],
-  ["proof", "3 packages on PyPI · 300+ commits to TernoDBI · agents in production"],
-  ["before", "R&D at Tata Steel · B.Tech, IIT Jodhpur"],
+  ["builds", "AI agents, MCP servers, RAG memory, evals and safe text‑to‑SQL"],
+  ["proof", "3 packages on PyPI, 300+ commits to TernoDBI, and agents in production"],
+  ["before", "R&D at Tata Steel, and a B.Tech from IIT Jodhpur"],
   ["looking", "Open to AI engineering roles"],
 ];
 

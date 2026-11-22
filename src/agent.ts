@@ -105,7 +105,7 @@ const intents: Intent[] = [
     name: "about",
     keywords: /\b(who|about|yourself|navin|introduce|summary|tl;?dr|focus|interests?|do|does)\b/gi,
     answer: () => [`${profile.name} is an ${profile.role} at ${profile.company}, building ${profile.project}. He builds AI agents and the systems around them: agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.`],
-    offer: ["Want the 30-second summary?", "tldr"],
+    offer: ["Want the 30‑second summary?", "tldr"],
   },
 ];
 
@@ -185,7 +185,7 @@ export async function answerReply(line: string, ctx: Ctx) {
   const list = ctx.add(h("ol", { class: "agent agent-answer", "aria-label": "Vink's answer" }));
   if (YES.test(line.trim())) {
     // Nothing was on offer: suggest the best starting point, so the next "yes" does something.
-    reply(list, ["Sure. The quickest way in is the 30-second summary."], "Want it?");
+    reply(list, ["Sure. The quickest way in is the 30‑second summary."], "Want it?");
     setOffer("tldr", ctx.shell);
     return;
   }
@@ -200,7 +200,7 @@ export async function ask(question: string, ctx: Ctx) {
     reply(
       list,
       ["I didn't quite catch that. I know about Navin's projects, experience, skills, education and how to reach him."],
-      "Want the 30-second summary to start?",
+      "Want the 30‑second summary to start?",
     );
     setOffer("tldr", ctx.shell);
     return;

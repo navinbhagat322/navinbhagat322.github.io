@@ -249,7 +249,7 @@ const FEATURED: [string, string, string, string[]][] = [
   ["ternodbi", "TernoDBI", "MCP server that lets AI agents query databases safely", ["oss", "pypi"]],
   ["agents", "Terno agents", "multi-agent CLI that answers questions about your data", ["oss", "pypi"]],
   ["evals", "Agent evals", "regression tests that score agent answers against SQL", []],
-  ["vink", "Vink", "turns YouTube videos into detailed notes · CLI and MCP", ["oss", "pypi"]],
+  ["vink", "Vink", "turns YouTube videos into detailed notes (CLI and MCP)", ["oss", "pypi"]],
 ];
 
 /** The opening screen: who Navin is, then a short agent session that answers it. */
@@ -271,7 +271,7 @@ export function welcome(): HTMLElement {
             "tr",
             { style: `--i:${i}`, class: `hq-${r.field}` },
             h("th", { scope: "row" }, String(r.field)),
-            h("td", {}, ...(FACT_LINKS[String(r.field)]?.() ?? items(String(r.value).split(" · ")))),
+            h("td", {}, ...(FACT_LINKS[String(r.field)]?.() ?? [String(r.value)])),
           ),
         ),
       ),
@@ -293,7 +293,7 @@ export function welcome(): HTMLElement {
             "span",
             { class: "ag-work-line" },
             line,
-            tags.length ? h("span", { class: "ag-tags", title: tags.map((t) => (t === "oss" ? "open source" : "on PyPI")).join(", ") }, tags.join(" · ")) : null,
+            tags.length ? h("span", { class: "ag-tags" }, tags.map((t) => (t === "oss" ? "open source" : "PyPI")).join(", ")) : null,
           ),
         ),
       ),
@@ -336,7 +336,7 @@ export function welcome(): HTMLElement {
           h(
             "div",
             {},
-            h("p", {}, "That's Navin at a glance. ", h("span", { class: "ag-offer" }, "Want the 30-second summary?")),
+            h("p", {}, "That's Navin at a glance. ", h("span", { class: "ag-offer" }, "Want the 30‑second summary?")),
           ),
         ),
       ),
@@ -347,24 +347,15 @@ export function welcome(): HTMLElement {
 
 /** Table cells that link somewhere; the plain text in content.ts stays the SQL value. */
 const FACT_LINKS: Record<string, () => Child[]> = {
-  proof: () =>
-    items([
-      link(links.pypi, "3 packages on PyPI", "hq-link"),
-      cmd("projects ternodbi", "300+ commits to TernoDBI", "hq-link"),
-      cmd("projects agents", "agents in production", "hq-link"),
-    ]),
+  proof: () => [
+    link(links.pypi, "3 packages on PyPI", "hq-link"),
+    ", ",
+    cmd("projects ternodbi", "300+ commits to TernoDBI", "hq-link"),
+    ", and ",
+    cmd("projects agents", "agents in production", "hq-link"),
+  ],
   looking: () => [h("strong", { class: "accent" }, profile.looking)],
 };
-
-/** A "·"-separated list whose items never break mid-phrase; lines wrap between items. */
-function items(parts: Child[]): Child[] {
-  // The space after each "·" is where a line may break, so the dot ends the line it's on.
-  return parts.flatMap((part, i) => [
-    i ? h("span", { class: "hq-sep", "aria-hidden": "true" }, "·") : null,
-    i ? " " : null,
-    h("span", { class: "hq-item" }, part),
-  ]);
-}
 
 /** Every section of the site, one click away. Each row shows the command it runs. */
 export function exploreIndex(): HTMLElement {

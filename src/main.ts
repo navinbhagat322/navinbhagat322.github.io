@@ -4,7 +4,7 @@ import "@fontsource/press-start-2p/400.css";
 import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";
-import { analyticsEnabled, startAnalytics, trackCommand } from "./analytics";
+import { analyticsEnabled, startAnalytics, totalVisits, trackCommand } from "./analytics";
 import { answerReply, ask, canAnswer, isReply, looksLikeQuestion, setOffer } from "./agent";
 import { commands } from "./commands";
 import { links, profile } from "./content";
@@ -97,7 +97,16 @@ async function startShell() {
 
   const xpSlot = h("span", {});
   // Analytics run quietly; the count stays behind the `visits` command.
-  if (analyticsEnabled()) startAnalytics();
+  // Visit count: hidden until analytics is set up and the number loads.
+  const visitsSlot = h("button", { type: "button", class: "sb-item sb-link sb-visits", "data-run": "visits", title: "Profile visits", hidden: true });
+  if (analyticsEnabled()) {
+    startAnalytics();
+    void totalVisits().then((n) => {
+      if (!n || n === "0") return;
+      visitsSlot.replaceChildren(icon("eye", 12), n, h("span", { class: "sb-visits-word" }, n === "1" ? "visit" : "visits"));
+      visitsSlot.hidden = false;
+    });
+  }
 
   const statusbar = h(
     "footer",
@@ -105,6 +114,7 @@ async function startShell() {
     // Availability, always in view.
     h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "contact", title: "How to reach Navin" }, h("span", { class: "pulse small" }), profile.looking),
     h("span", { class: "sb-spacer" }),
+    visitsSlot,
     xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),
     h("span", { class: "sb-item sb-clock" }, clock),

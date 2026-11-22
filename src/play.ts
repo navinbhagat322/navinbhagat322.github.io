@@ -129,22 +129,19 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
   const toasts = h("div", { class: "toasts", "aria-live": "polite" });
   windowEl.append(toasts);
 
-  // ---------- XP pill in the status bar ----------
-  const xpFill = h("span", {});
-  const xpLabel = h("span", { class: "xp-level" });
+  // ---------- quest progress in the status bar (levels and XP live in the quests view) ----------
+  const xpLabel = h("span", {});
   const xpBtn = h(
     "button",
-    { type: "button", class: "xp sb-item", "data-run": "quests", title: "Quests & XP" },
+    { type: "button", class: "xp sb-item sb-link", "data-run": "quests", title: "Your quests" },
+    icon("trophy", 12),
     xpLabel,
-    h("span", { class: "xp-bar" }, xpFill),
   );
   statusSlot.replaceWith(xpBtn);
   const paintXp = () => {
-    const lvl = game.level();
-    xpLabel.textContent = `Lv ${lvl.number} · ${game.xp} xp`;
+    xpLabel.textContent = `${game.done}/${quests.length} quests`;
     // The game shows itself once someone is actually playing.
     xpBtn.hidden = game.done < 2;
-    xpFill.style.width = `${Math.round((game.xp / game.maxXp) * 100)}%`;
   };
   paintXp();
 
