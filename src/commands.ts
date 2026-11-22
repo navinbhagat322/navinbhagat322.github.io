@@ -156,10 +156,10 @@ export const commands: Command[] = [
   {
     name: "projects",
     summary: "things I've built",
-    usage: "[name | --work | --personal]",
+    usage: "[name | --featured | --work | --personal]",
     group: "explore",
     aliases: ["work"],
-    complete: () => [...projects.map((p) => p.slug), "--work", "--open-source", "--personal"],
+    complete: () => [...projects.map((p) => p.slug), "--featured", "--work", "--open-source", "--personal"],
     run: ({ args, add, out, error }) => {
       const arg = args[0]?.toLowerCase();
       if (!arg) {
@@ -171,9 +171,13 @@ export const commands: Command[] = [
         add(projectGrid(rest));
         return;
       }
+      if (arg === "--featured") {
+        add(projectGrid(projects.filter((p) => p.featured)));
+        return;
+      }
       if (arg.startsWith("--")) {
         const list = projects.filter((p) => p.kind === arg.slice(2));
-        if (!list.length) return error(`no projects of kind ${arg}. try --work, --open-source or --personal`);
+        if (!list.length) return error(`no projects of kind ${arg}. try --featured, --work, --open-source or --personal`);
         add(projectGrid(list));
         return;
       }

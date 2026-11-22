@@ -36,7 +36,7 @@ export class Block {
   private readonly meta: HTMLElement;
   private readonly started = performance.now();
 
-  constructor(command: Node, path: string) {
+  constructor(command: Node) {
     this.meta = h("span", { class: "block-meta" }, h("span", { class: "spinner", "aria-hidden": "true" }));
     this.body = h("div", { class: "block-body" });
     this.el = h(
@@ -45,8 +45,8 @@ export class Block {
       h(
         "header",
         { class: "block-head" },
-        h("span", { class: "block-path" }, path),
-        h("span", { class: "block-chevron", "aria-hidden": "true" }, "❯"),
+        // Shown like a user turn in an agent chat: "> command".
+        h("span", { class: "block-chevron", "aria-hidden": "true" }, ">"),
         h("span", { class: "block-cmd" }, command),
         this.meta,
       ),
@@ -114,7 +114,7 @@ export class Shell {
       h(
         "label",
         { class: "composer-field" },
-        h("span", { class: "composer-chevron", "aria-hidden": "true" }, "❯"),
+        h("span", { class: "composer-chevron", "aria-hidden": "true" }, ">"),
         h("span", { class: "composer-stack" }, this.overlay, this.input),
         h("span", { class: "composer-hint" }, h("kbd", {}, "↵"), " run"),
       ),
@@ -205,7 +205,7 @@ export class Shell {
       /* private mode: history just won't persist */
     }
 
-    const block = new Block(this.highlight(line), this.path);
+    const block = new Block(this.highlight(line));
     this.feed.append(block.el);
     this.scrollToEnd();
 

@@ -237,12 +237,12 @@ function toolStep(tool: string, args: string, working: string, at: number, resul
   );
 }
 
-/** The featured work, one line each, as the second tool's result. */
-const FEATURED: [string, string, string][] = [
-  ["ternodbi", "TernoDBI", "MCP server that lets agents query databases · PyPI · 300+ commits"],
-  ["agents", "Terno agents", "multi-agent CLI that answers questions about your data · open source"],
-  ["evals", "Agent evals", "regression tests that score agent answers against SQL results"],
-  ["vink", "Vink", "YouTube transcripts → detailed notes · CLI + MCP · PyPI"],
+/** The featured work, one line each, as the second tool's result. The numbers live in the facts above. */
+const FEATURED: [string, string, string, string[]][] = [
+  ["ternodbi", "TernoDBI", "MCP server that lets AI agents query databases safely", ["oss", "pypi"]],
+  ["agents", "Terno agents", "multi-agent CLI that answers questions about your data", ["oss", "pypi"]],
+  ["evals", "Agent evals", "regression tests that score agent answers against SQL", []],
+  ["vink", "Vink", "turns YouTube videos into detailed notes · CLI and MCP", ["oss", "pypi"]],
 ];
 
 /** The opening screen: who Navin is, then a short agent session that answers it. */
@@ -277,12 +277,17 @@ export function welcome(): HTMLElement {
     h(
       "ul",
       { class: "ag-work" },
-      ...FEATURED.map(([slug, name, line], i) =>
+      ...FEATURED.map(([slug, name, line, tags], i) =>
         h(
           "li",
           { style: `--i:${i}` },
           cmd(`projects ${slug}`, name, "ag-work-name"),
-          h("span", { class: "ag-work-line" }, line),
+          h(
+            "span",
+            { class: "ag-work-line" },
+            line,
+            tags.length ? h("span", { class: "ag-tags", title: tags.map((t) => (t === "oss" ? "open source" : "on PyPI")).join(", ") }, tags.join(" · ")) : null,
+          ),
         ),
       ),
     ),

@@ -394,18 +394,14 @@ code {
 .block-head {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  font: 13px/1.5 var(--mono);
+  gap: 10px;
+  font: 15px/1.5 var(--mono);
   min-width: 0;
 }
 
-.block-path {
-  color: var(--accent-2);
-  flex: none;
-}
-
+/* Each command reads like the opening "> who is Navin?": a gold > and plain text. */
 .block-chevron {
-  color: var(--green);
+  color: var(--accent);
   flex: none;
 }
 
@@ -414,9 +410,13 @@ code {
 }
 
 .block-cmd {
-  color: var(--fg);
+  color: var(--fg-soft);
   min-width: 0;
   overflow-wrap: anywhere;
+}
+
+.block-cmd [class^="tok-"] {
+  color: inherit;
 }
 
 .block-meta {
@@ -652,6 +652,7 @@ code {
   animation: fade-in 0.35s var(--delay, 0s) ease-out both;
 }
 
+/* the visitor's question, the way agent chats show a user turn */
 .ag-user {
   display: flex;
   align-items: baseline;
@@ -685,17 +686,6 @@ code {
   box-shadow: 0 0 0 3px var(--green-soft);
 }
 
-/* a thin line from the tool's dot down to the end of its result */
-.ag-tool::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  bottom: 22px;
-  left: 3.5px;
-  width: 1px;
-  background: var(--line-strong);
-}
-
 .ag-call {
   display: flex;
   align-items: center;
@@ -719,6 +709,17 @@ code {
   font: inherit;
 }
 
+/* a thin line from the tool's dot down to the end of its result */
+.ag-tool::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  bottom: 22px;
+  left: 3.5px;
+  width: 1px;
+  background: var(--line-strong);
+}
+
 .ag-result {
   margin-top: 8px;
   animation: fade-in 0.3s var(--at, 1s) ease-out both;
@@ -735,14 +736,15 @@ code {
 
 .ag-work > li {
   display: grid;
+  /* the same label column as the facts above, so every value starts on one edge */
   grid-template-columns: 120px minmax(0, 1fr);
-  gap: 16px;
+  gap: 0;
   align-items: baseline;
   animation: row-in 0.3s calc(var(--at, 1s) + var(--i) * 0.08s) ease-out both;
 }
 
 .ag-work-name {
-  padding: 0;
+  padding: 0 12px 0 0;
   border: 0;
   background: none;
   color: var(--fg);
@@ -762,20 +764,27 @@ code {
   line-height: 1.5;
 }
 
+.ag-tags {
+  margin-left: 10px;
+  color: var(--faint);
+  font: 12px var(--mono);
+  white-space: nowrap;
+}
+
 .ag-more {
   padding: 0;
   border: 0;
   background: none;
   color: var(--muted);
   font: inherit;
-  text-decoration: underline;
-  text-decoration-color: var(--line-strong);
+  text-decoration: none;
   text-underline-offset: 3px;
   cursor: pointer;
 }
 
 .ag-more:hover {
   color: var(--accent);
+  text-decoration: underline;
 }
 
 .ag-meta {
@@ -838,16 +847,15 @@ code {
   background: none;
   color: inherit;
   font: inherit;
-  text-decoration: underline;
-  text-decoration-color: var(--line-strong);
+  text-decoration: none;
   text-underline-offset: 3px;
   cursor: pointer;
-  transition: color 0.15s, text-decoration-color 0.15s;
+  transition: color 0.15s;
 }
 
 .hq-link:hover {
   color: var(--accent);
-  text-decoration-color: currentColor;
+  text-decoration: underline;
 }
 
 .hq-looking strong {
@@ -2184,8 +2192,8 @@ td.bool {
 }
 
 .composer-chevron {
-  font: 600 14px var(--mono);
-  color: var(--green);
+  font: 15px var(--mono);
+  color: var(--accent);
 }
 
 .composer-stack {
@@ -3800,10 +3808,6 @@ body.plain-mode #app {
     margin-top: 26px;
   }
 
-  .ag-step {
-    gap: 10px;
-  }
-
   .hq-table th {
     width: 64px;
     padding-right: 12px;
@@ -3831,9 +3835,6 @@ body.plain-mode #app {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .block-path {
-    display: none;
-  }
 }
 
 /* Short laptop screens: keep the explore list clear of Vink. */
