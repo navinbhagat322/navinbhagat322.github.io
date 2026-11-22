@@ -54,7 +54,7 @@ function jsonLd() {
         url: SITE,
         name: `${profile.name} — ${profile.role}`,
         isPartOf: { "@id": `${SITE}#website` },
-        dateModified: today(),
+        dateModified: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
         mainEntity: { "@id": `${SITE}#person` },
       },
       person,
