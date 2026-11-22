@@ -3,18 +3,18 @@
 // it runs. There is no model and no network call; it all runs in the browser.
 
 import { links, profile, projects } from "./content";
-import type { Ctx } from "./shell";
+import type { Ctx, Shell } from "./shell";
 import { query } from "./sql";
-import { cmd, h, icon, link, reducedMotion, sleep, type Child } from "./ui";
-import { vinkSVG } from "./vink";
-import { sqlTable } from "./views";
+import { h, link, reducedMotion, sleep, type Child } from "./ui";
+import { vinkMark } from "./views";
 
 interface Intent {
   name: string;
   keywords: RegExp;
   sql?: string;
-  showTable?: boolean;
   answer: () => Child[];
+  /** Vink's closing question, and the command a "yes" runs. */
+  offer: [question: string, run: string];
 }
 
 const ternodbi = projects.find((p) => p.slug === "ternodbi")!;
@@ -26,8 +26,8 @@ const intents: Intent[] = [
     answer: () => [
       h("strong", {}, "TernoDBI"),
       ` is one part of Navin's work at Terno AI: an open-source MCP server (on PyPI) where he's the top contributor (300+ commits). AI agents connect over MCP; every query is validated and scoped. He built the hosted MCP server with OAuth, the API connectors (GA4, Google Ads, Meta Ads, Shopify, HubSpot, Instagram …), multi-tenancy and the streaming query engine. `,
-      cmd("projects ternodbi", "Full details →"),
     ],
+    offer: ["Want the full TernoDBI details?", "projects ternodbi"],
   },
   {
     name: "sqlshield",
@@ -35,8 +35,21 @@ const intents: Intent[] = [
     answer: () => [
       h("strong", {}, "SQLShield"),
       " sits between LLM-generated SQL and the database: it limits which tables, columns and rows a query can touch, and rewrites the query before it runs. Navin added Snowflake support and cross-platform builds. ",
-      cmd("projects sqlshield", "Details →"),
     ],
+    offer: ["Want the SQL Shield details?", "projects sqlshield"],
+  },
+  {
+    name: "contact",
+    keywords: /\b(contact|e-?mail|mail|reach|linkedin|hire|hiring|talk|connect|touch|availab\w*|open|looking|opportunit\w*|roles?|resume|cv)\b/gi,
+    sql: "SELECT site, url FROM links WHERE site = 'email' OR site = 'linkedin'",
+    answer: () => [
+      "Navin is open to AI engineering roles. Email is fastest: ",
+      link(`mailto:${links.email}`, links.email),
+      ". He's also on ",
+      link(links.linkedin, "LinkedIn"),
+      ".",
+    ],
+    offer: ["Want all his links?", "contact"],
   },
   {
     name: "projects",
@@ -50,8 +63,8 @@ const intents: Intent[] = [
       " that tests them, a self-improving ",
       h("strong", {}, "RAG memory"),
       ", and the MCP layer — including the open-source TernoDBI. Earlier: the PyQuest app and a financial RAG assistant. ",
-      cmd("projects", "See all →"),
     ],
+    offer: ["Want to see all his projects?", "projects"],
   },
   {
     name: "experience",
@@ -59,37 +72,24 @@ const intents: Intent[] = [
     sql: "SELECT org, title, kind FROM experience WHERE kind != 'education'",
     answer: () => [
       `Navin is an ${profile.role} at ${profile.company}, building ${profile.project} — agents, evals, RAG memory and MCP. Before that: an SDE internship at CloudxLab (the PyQuest app), an AI internship at Scientific Investing, and R&D at Tata Steel. `,
-      cmd("experience", "Timeline →"),
     ],
+    offer: ["Want the full timeline?", "experience"],
   },
   {
     name: "skills",
     keywords: /\b(skills?|stack|tech|languages?|frameworks?|tools?|know|python|sql|pytorch|django|aws|typescript)\b/gi,
     sql: "SELECT area, name FROM skills WHERE area = 'ai / ml'",
-    showTable: false,
     answer: () => [
       "Navin uses Python and SQL every day; LangChain, CrewAI, AutoGen, MCP, RAG and text-to-SQL for agents; PyTorch, Hugging Face and scikit-learn for ML; Django, Celery, React and Flutter for apps; Docker and AWS to ship it. ",
-      cmd("skills", "Full list →"),
     ],
+    offer: ["Want the full skills list?", "skills"],
   },
   {
     name: "education",
     keywords: /\b(educat\w*|stud(y|ied)|college|university|degree|iit|jodhpur|cgpa|gpa|b\.?tech)\b/gi,
     sql: "SELECT org, title FROM experience WHERE kind = 'education'",
     answer: () => ["Navin did his B.Tech at IIT Jodhpur, CGPA 8.15."],
-  },
-  {
-    name: "contact",
-    keywords: /\b(contact|e-?mail|mail|reach|linkedin|hire|hiring|talk|connect|available|resume|cv)\b/gi,
-    sql: "SELECT site, url FROM links WHERE site = 'email' OR site = 'linkedin'",
-    answer: () => [
-      "Email is fastest: ",
-      link(`mailto:${links.email}`, links.email),
-      ". He's also on ",
-      link(links.linkedin, "LinkedIn"),
-      ". ",
-      cmd("contact", "All links →"),
-    ],
+    offer: ["Want his full timeline?", "experience"],
   },
   {
     name: "hobbies",
@@ -99,92 +99,133 @@ const intents: Intent[] = [
       link(links.youtube, "YouTube"),
       ".",
     ],
+    offer: ["Want to know more about him?", "about"],
   },
   {
     name: "about",
-    keywords: /\b(who|about|yourself|navin|introduce|summary|tl;?dr|focus|interests?)\b/gi,
-    answer: () => [`${profile.name} is an ${profile.role} at ${profile.company}, building ${profile.project}. He builds AI agents and the systems around them: agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL. `, cmd("about", "More →")],
+    keywords: /\b(who|about|yourself|navin|introduce|summary|tl;?dr|focus|interests?|do|does)\b/gi,
+    answer: () => [`${profile.name} is an ${profile.role} at ${profile.company}, building ${profile.project}. He builds AI agents and the systems around them: agent frameworks, evaluation pipelines, RAG memory, MCP servers and safe text-to-SQL.`],
+    offer: ["Want the 30-second summary?", "tldr"],
   },
 ];
 
+/** The question's words plus their simple stems, so "builds" also matches "build". */
+function forms(question: string): string {
+  const out = new Set<string>();
+  for (const w of question.toLowerCase().match(/[a-z0-9.;+#-]+/g) ?? []) {
+    out.add(w);
+    for (const end of ["ing", "ed", "es", "s"]) if (w.length > end.length + 2 && w.endsWith(end)) out.add(w.slice(0, -end.length));
+  }
+  return [...out].join(" ");
+}
+
 function pick(question: string): { intent: Intent; score: number } | undefined {
   let best: { intent: Intent; score: number } | undefined;
+  const text = forms(question);
   for (const intent of intents) {
-    const score = question.match(intent.keywords)?.length ?? 0;
+    const score = text.match(intent.keywords)?.length ?? 0;
     if (score > (best?.score ?? 0)) best = { intent, score };
   }
   return best;
 }
 
-function step(ctx: Ctx, list: HTMLElement, label: string, ...detail: Child[]) {
-  const row = h(
-    "li",
-    { class: "step running" },
-    h("span", { class: "step-icon" }, h("span", { class: "spinner" })),
-    h("span", { class: "step-label" }, label),
-    h("span", { class: "step-detail" }, ...detail),
+/** A tool call, drawn like the opening session: "Working…" for a beat, then the call and a one-line result. */
+async function toolLine(ctx: Ctx, list: HTMLElement, tool: string, args: string, working: string, result: () => string) {
+  const call = h("p", { class: "ag-call" }, h("span", { class: "spinner", "aria-hidden": "true" }), h("span", { class: "ag-working" }, working));
+  const meta = h("span", { class: "ag-meta" });
+  list.append(
+    h(
+      "li",
+      { class: "ag-step ag-tool", style: "--delay:0s; --at:0s" },
+      h("span", { class: "ag-dot ag-dot-tool", "aria-hidden": "true" }),
+      h("div", {}, call, h("div", { class: "ag-result" }, meta)),
+    ),
   );
-  list.append(row);
   ctx.add(document.createTextNode("")); // nudge the shell to keep following output
-  return async (...result: Child[]) => {
-    if (!reducedMotion()) await sleep(280 + Math.random() * 220);
-    row.classList.remove("running");
-    row.querySelector(".step-icon")!.replaceChildren(icon("check", 12));
-    if (result.length) row.querySelector(".step-detail")!.append(h("span", { class: "muted" }, "  → ", ...result));
-  };
+  if (!reducedMotion()) await sleep(420 + Math.random() * 260);
+  call.replaceChildren(h("span", {}, h("strong", {}, tool), h("code", {}, `(${args})`)));
+  meta.textContent = result();
+}
+
+/** Vink's reply: his face and the answer, ending with his question if he has one. */
+function reply(list: HTMLElement, answer: Child[], question?: string) {
+  list.append(
+    h(
+      "li",
+      { class: "ag-step ag-reply", style: "--delay:0s" },
+      vinkMark(),
+      h("div", {}, h("p", {}, ...answer, question ? h("span", { class: "ag-offer" }, " ", question) : null)),
+    ),
+  );
+}
+
+// What Vink last offered, so a plain "yes" can run it.
+let offered: string | null = null;
+
+/** Remember (or clear) Vink's open offer, and hint the reply in the prompt. */
+export function setOffer(run: string | null, shell: Shell) {
+  offered = run;
+  shell.setHint(run ? "yes" : null);
+}
+
+const YES = /^(y|yes|yeah|yep|yup|sure|ok(ay)?|please|go ahead|do it|show me)[.!]*$/i;
+const NO = /^(n|no|nope|nah|not now|no thanks?)[.!]*$/i;
+
+/** Is this a short yes/no reply to Vink rather than a command or question? */
+export const isReply = (line: string) => YES.test(line.trim()) || NO.test(line.trim());
+
+/** Answers a yes/no: "yes" runs what Vink offered, "no" lets it go. */
+export async function answerReply(line: string, ctx: Ctx) {
+  const pending = offered;
+  setOffer(null, ctx.shell);
+  if (YES.test(line.trim()) && pending) {
+    await ctx.shell.exec(pending, ctx);
+    return;
+  }
+  const list = ctx.add(h("ol", { class: "agent agent-answer", "aria-label": "Vink's answer" }));
+  if (YES.test(line.trim())) {
+    // Nothing was on offer: suggest the best starting point, so the next "yes" does something.
+    reply(list, ["Sure. The quickest way in is the 30-second summary."], "Want it?");
+    setOffer("tldr", ctx.shell);
+    return;
+  }
+  reply(list, ["No worries. Ask me anything else about Navin whenever you like."]);
 }
 
 export async function ask(question: string, ctx: Ctx) {
-  const steps = ctx.add(h("ol", { class: "agent-steps" }));
-
-  let done = step(ctx, steps, "plan", "reading the question");
+  const list = ctx.add(h("ol", { class: "agent agent-answer", "aria-label": "Vink's answer" }));
   const hit = pick(question);
-  await done(hit ? `intent: ${hit.intent.name}` : "no confident match");
 
   if (!hit) {
-    ctx.add(
-      h(
-        "div",
-        { class: "answer" },
-        vinkFace(),
-        h(
-          "p",
-          {},
-          "I'm Vink, a small rule-based agent, so I only know about Navin: his projects, experience, skills, education and how to reach him. Try ",
-          cmd("ask what is ternodbi?"),
-          " or ",
-          cmd("help"),
-          ".",
-        ),
-      ),
+    reply(
+      list,
+      ["I didn't quite catch that. I know about Navin's projects, experience, skills, education and how to reach him."],
+      "Want the 30-second summary to start?",
     );
+    setOffer("tldr", ctx.shell);
     return;
   }
 
   const { intent } = hit;
   if (intent.sql) {
-    done = step(ctx, steps, "tool", "sql.run(", h("code", {}, intent.sql), ")");
-    const t0 = performance.now();
-    const result = query(intent.sql);
-    const ms = performance.now() - t0;
-    await done(`${result.rows.length} row${result.rows.length === 1 ? "" : "s"}`);
-    if (intent.showTable !== false) ctx.add(sqlTable(result, ms));
+    const sql = intent.sql;
+    await toolLine(ctx, list, "Query", sql, "Querying…", () => {
+      const t0 = performance.now();
+      const n = query(sql).rows.length;
+      const ms = performance.now() - t0;
+      return `${n} row${n === 1 ? "" : "s"} · ${ms < 1 ? "<1" : Math.round(ms)} ms`;
+    });
   } else {
-    done = step(ctx, steps, "tool", "memory.read(", h("code", {}, `"${intent.name}"`), ")");
-    await done(intent.name === "ternodbi" ? `${ternodbi.highlights?.length ?? 0} facts` : "found");
+    await toolLine(ctx, list, "Read", `memory "${intent.name}"`, "Reading…", () =>
+      intent.name === "ternodbi" ? `${ternodbi.highlights?.length ?? 0} facts` : "found",
+    );
   }
-
-  done = step(ctx, steps, "answer", "writing");
-  await done();
-  ctx.add(h("div", { class: "answer" }, vinkFace(), h("p", {}, ...intent.answer())));
+  reply(list, intent.answer(), intent.offer[0]);
+  setOffer(intent.offer[1], ctx.shell);
 }
 
-/** Vink's face marks every answer, so it's clear who is speaking. */
-function vinkFace(): HTMLElement {
-  const el = h("span", { class: "answer-icon answer-vink", role: "img", "aria-label": "Vink" });
-  el.innerHTML = vinkSVG("head");
-  return el;
-}
+/** Does Vink recognise the topic, even in a short phrase like "his skills"? */
+export const canAnswer = (input: string) => !!pick(input);
 
 /** Does unknown input read like a question rather than a mistyped command? */
 export function looksLikeQuestion(input: string): boolean {

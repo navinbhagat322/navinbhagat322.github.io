@@ -5,7 +5,7 @@ import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";
 import { analyticsEnabled, startAnalytics, trackCommand } from "./analytics";
-import { ask, looksLikeQuestion } from "./agent";
+import { answerReply, ask, canAnswer, isReply, looksLikeQuestion, setOffer } from "./agent";
 import { commands } from "./commands";
 import { links, profile } from "./content";
 import { NeuralBackground } from "./neural";
@@ -39,7 +39,8 @@ async function startShell() {
     "sudo hire navin",
   ];
   shell.fallback = async (ctx, line) => {
-    if (looksLikeQuestion(line)) return ask(line, ctx);
+    if (isReply(line)) return answerReply(line, ctx);
+    if (looksLikeQuestion(line) || canAnswer(line)) return ask(line, ctx);
     ctx.error(`command not found: ${line.split(/\s+/)[0]}`);
     ctx.out(
       h("span", { class: "muted" }, "type "),
@@ -62,18 +63,28 @@ async function startShell() {
     "header",
     { class: "titlebar" },
     h("div", { class: "title" }, h("span", { class: "title-user" }, `${profile.handle}@${profile.host}`), h("span", { class: "title-path" }, " — ~/portfolio")),
+    // Search sits in the middle, like an app's command bar.
     h(
       "div",
-      { class: "title-actions" },
+      { class: "title-search" },
       h(
         "button",
         { type: "button", class: "kbd-btn", onClick: () => palette.open(), "aria-label": "Open command palette" },
         icon("search", 14),
-        h("span", { class: "kbd-label" }, "Search"),
+        h("span", { class: "kbd-label" }, "Search or jump to…"),
         h("kbd", {}, isMac ? "⌘K" : "Ctrl K"),
       ),
+    ),
+    h(
+      "div",
+      { class: "title-actions" },
+      // Ways to reach Navin, always in reach.
+      h("a", { class: "tb-link", href: `mailto:${links.email}?subject=Hi%20Navin`, title: "Email Navin" }, icon("mail", 15), h("span", { class: "tb-label" }, "Email")),
+      h("a", { class: "tb-link", href: links.linkedin, target: "_blank", rel: "noopener", title: "Navin on LinkedIn" }, icon("linkedin", 15), h("span", { class: "tb-label" }, "LinkedIn")),
+      h("a", { class: "tb-link", href: links.github, target: "_blank", rel: "noopener", title: "Navin on GitHub" }, icon("github", 15), h("span", { class: "tb-label" }, "GitHub")),
+      // The theme toggle sits apart, at the end: it's a setting, not a link.
+      h("span", { class: "tb-gap", "aria-hidden": "true" }),
       themeBtn,
-      h("a", { class: "icon-btn", href: links.github, target: "_blank", rel: "noopener", "aria-label": "GitHub", title: "GitHub" }, icon("github", 15)),
     ),
   );
 
@@ -91,8 +102,8 @@ async function startShell() {
   const statusbar = h(
     "footer",
     { class: "statusbar" },
-    h("span", { class: "sb-item sb-hide-mobile" }, icon("branch", 12), "main"),
-    h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "projects" }, h("span", { class: "pulse small" }), "building Terno AI"),
+    // Availability, always in view.
+    h("button", { type: "button", class: "sb-item sb-link sb-hide-mobile", "data-run": "contact", title: "How to reach Navin" }, h("span", { class: "pulse small" }), profile.looking),
     h("span", { class: "sb-spacer" }),
     xpSlot,
     h("a", { class: "sb-item sb-link", href: "?plain" }, "plain page"),
@@ -139,6 +150,8 @@ async function startShell() {
   const onStart = shell.onStart;
   shell.onStart = (name, line) => {
     onStart?.(name, line);
+    // Anything but a yes/no moves the conversation on, so Vink's last offer lapses.
+    if (!isReply(line)) setOffer(null, shell);
     if (name === "ask" || (!shell.get(name) && looksLikeQuestion(line))) neural.think(5);
     else if (name === "sql") neural.think(2);
   };
@@ -166,6 +179,7 @@ async function startShell() {
 
   // No auto-focus: the prompt stays quiet until someone types (keys anywhere land in it).
   shell.addToFeed(welcome());
+  setOffer("tldr", shell);
   const activityReady = loadActivity().then(() => fillPlaceholders());
 
   // Deep links: /?cmd=projects  or  /?q=what+is+ternodbi

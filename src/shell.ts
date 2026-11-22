@@ -71,6 +71,8 @@ export class Shell {
   readonly composer: HTMLElement;
   private readonly input: HTMLInputElement;
   private readonly send: HTMLButtonElement;
+  /** A suggested reply (e.g. "yes") shown in the empty prompt until the next command. */
+  private hint: string | null = null;
   private readonly overlay: HTMLElement;
   private readonly popover: HTMLElement;
   private readonly commands = new Map<string, Command>();
@@ -180,6 +182,12 @@ export class Shell {
   /** Adds a non-command node (like the welcome card) to the feed. */
   addToFeed(node: Node) {
     this.feed.append(node);
+  }
+
+  /** Suggests a reply in the empty prompt, like an agent app suggesting your next message. */
+  setHint(text: string | null) {
+    this.hint = text;
+    this.refresh(false);
   }
 
   /** Types the command into the composer like a person would, then runs it. */
@@ -328,7 +336,7 @@ export class Shell {
     this.overlay.replaceChildren(
       this.highlight(value),
       this.ghost ? h("span", { class: "ghost" }, this.ghost.slice(value.length)) : "",
-      !value ? h("span", { class: "placeholder" }, placeholder()) : "",
+      !value ? h("span", { class: "placeholder" }, this.hint ? replyHint(this.hint) : placeholder()) : "",
     );
     this.overlay.scrollLeft = this.input.scrollLeft;
     this.send.classList.toggle("ready", !!value.trim());
@@ -472,6 +480,13 @@ export class Shell {
       if (e.key === "ArrowLeft" || e.key === "Home" || e.key === "End") this.refresh(false);
     });
   }
+}
+
+/** The prompt's text while Vink waits for a reply. */
+function replyHint(reply: string): string {
+  return window.matchMedia("(max-width: 640px)").matches
+    ? `Type ${reply}, or ask…`
+    : `Type ${reply}, or ask Vink something else…`;
 }
 
 /** What the prompt invites, shorter on phones. */

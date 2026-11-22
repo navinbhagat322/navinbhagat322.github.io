@@ -1,7 +1,7 @@
 // Gamification glue: Vink reacts to what visitors do, quests unlock, XP grows.
 
 import { activity, loadActivity, notable, repoName } from "./activity";
-import { looksLikeQuestion } from "./agent";
+import { canAnswer, isReply, looksLikeQuestion } from "./agent";
 import { projects } from "./content";
 import { EXPLORE_COMMANDS, Game, levels, quests, type Quest } from "./game";
 import type { Command, Shell } from "./shell";
@@ -272,7 +272,7 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     const canonical = shell.get(name)?.name ?? name;
     if (quiet) window.setTimeout(() => (quiet = false), 400);
     const args = line.split(/\s+/).slice(1);
-    const question = !known && looksLikeQuestion(line);
+    const question = !known && (looksLikeQuestion(line) || isReply(line) || canAnswer(line));
 
     if (canonical !== "vink") vink.setPose("idle");
     const xpBefore = game.xp;
@@ -392,7 +392,7 @@ function questView(game: Game): HTMLElement {
         h(
           "div",
           { class: "quest-next" },
-          lvl.next ? `${lvl.next.xp - game.xp} xp to ${lvl.next.title} · ${game.done}/${quests.length} quests` : "Max level. You've seen it all.",
+          lvl.next ? `${lvl.next.xp - game.xp} xp to ${lvl.next.title} · ${game.done} of ${quests.length} quests done` : "Max level. You've seen it all.",
         ),
       ),
     ),

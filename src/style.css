@@ -260,6 +260,41 @@ code {
   color: var(--green);
 }
 
+/* Summary · Email · LinkedIn in the top bar */
+.tb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--fg-soft);
+  font: 500 13px var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tb-link .icon {
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.tb-link:hover {
+  background: var(--hover-strong);
+  color: var(--fg);
+}
+
+.tb-link:hover .icon {
+  color: var(--accent);
+}
+
+.tb-gap {
+  width: 14px;
+}
+
 .kbd-btn {
   display: inline-flex;
   align-items: center;
@@ -815,11 +850,15 @@ code {
   background: var(--grad-tile);
 }
 
-.ag-vink svg,
-.answer-vink svg {
+.ag-vink svg {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* Vink's closing question: a touch brighter, so it reads as his turn to ask */
+.ag-offer {
+  color: var(--accent);
 }
 
 .ag-reply p {
@@ -829,49 +868,9 @@ code {
   line-height: 1.55;
 }
 
-.ag-reply .hero-hurry {
-  margin-top: 12px;
-}
-
-/* suggested follow-ups: a quiet label, then small filled pills (no borders) */
-.ag-suggest-label {
-  margin-right: 4px;
-  color: var(--faint);
-  font: 12px var(--mono);
-}
-
-.ag-suggest {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.ag-ask {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  background: var(--hover-strong);
-  color: var(--fg-soft);
-  font: 13px/1.4 var(--mono);
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
-}
-
-.ag-ask > span {
-  color: var(--accent);
-}
-
-.ag-ask:hover,
-.ag-ask:focus-visible {
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-  background: var(--accent-soft);
-  color: var(--accent);
-  outline: none;
+/* answers in the feed reuse the opening session's layout */
+.block .agent {
+  margin-top: 10px;
 }
 
 /* the facts, as the tool's result */
@@ -930,55 +929,6 @@ code {
 .hq-looking strong {
   font-weight: 500;
   text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
-}
-
-.hero-hurry {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 26px;
-}
-
-.cta {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 0;
-  border: 0;
-  background: none;
-  color: var(--fg);
-  font: 500 14.5px var(--mono);
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.cta > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.cta .icon {
-  color: var(--muted);
-  transition: color 0.15s;
-}
-
-.cta:hover {
-  color: var(--accent);
-}
-
-.cta:hover .icon {
-  color: var(--accent);
-}
-
-.cta-tag {
-  margin-left: -2px;
-  padding: 4px 6px 3px;
-  border-radius: 5px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font: 400 7.5px/1 var(--pixel);
-  font-style: normal;
-  letter-spacing: 0.02em;
 }
 
 /* ---------- explore: every section, one click away ---------- */
@@ -2149,78 +2099,6 @@ td.bool {
   margin-top: 6px;
   font: 11px var(--mono);
   color: var(--faint);
-}
-
-/* agent */
-.agent-steps {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-  display: grid;
-  gap: 4px;
-  font: 12.5px/1.6 var(--mono);
-}
-
-.step {
-  display: grid;
-  grid-template-columns: 16px 56px 1fr;
-  gap: 8px;
-  align-items: baseline;
-  animation: fade-in 0.2s ease-out both;
-}
-
-.step-icon {
-  display: grid;
-  place-items: center;
-  height: 1.6em;
-  color: var(--green);
-}
-
-.step-label {
-  color: var(--accent-2);
-}
-
-.step-detail {
-  color: var(--fg-soft);
-  overflow-wrap: anywhere;
-}
-
-.agent-steps + .sql-result {
-  margin-bottom: 12px;
-}
-
-.answer {
-  display: grid;
-  grid-template-columns: 22px 1fr;
-  gap: 10px;
-  max-width: 760px;
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent);
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent-2-soft), transparent 70%);
-  animation: fade-in 0.3s ease-out both;
-}
-
-.answer-icon {
-  display: grid;
-  place-items: center;
-  height: 1.6em;
-  color: var(--accent-2);
-}
-
-.answer-vink {
-  width: 22px;
-  height: 22px;
-  overflow: hidden;
-  border-radius: 7px;
-  background: var(--grad-tile);
-}
-
-.answer p {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--fg);
 }
 
 .spinner {
@@ -3850,9 +3728,21 @@ body.plain-mode #app {
   box-shadow: none;
 }
 
+/* title · centred search · links and icons */
 .titlebar {
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto minmax(auto, 1fr);
+  gap: 16px;
   padding-inline: clamp(16px, 4vw, 56px) clamp(10px, 3vw, 44px);
+}
+
+.title-search .kbd-btn {
+  width: clamp(200px, 18vw, 260px);
+  margin: 0;
+}
+
+.title-search .kbd-label {
+  flex: 1;
+  text-align: left;
 }
 
 .title {
@@ -4038,8 +3928,25 @@ body.plain-mode #app {
 }
 
 @media (max-width: 640px) {
-  /* On phones the label sits on its own line above the pills. */
-  .ag-suggest-label {
-    flex-basis: 100%;
+  /* Phones: icons and the TL;DR tag only. */
+  .tb-label,
+  .tb-gap {
+    display: none;
+  }
+
+  .tb-link {
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Phones: title, then search and links as compact icons on the right. */
+  .titlebar {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 4px;
+  }
+
+  .title-search .kbd-btn {
+    width: auto;
   }
 }

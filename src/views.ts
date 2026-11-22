@@ -220,8 +220,8 @@ export function sqlTable({ columns, rows }: Result, ms: number): HTMLElement {
   );
 }
 
-/** Vink's face beside the reply: he's the agent doing the talking. */
-function vinkMark(): HTMLElement {
+/** Vink's face beside a reply: he's the agent doing the talking. */
+export function vinkMark(): HTMLElement {
   const el = h("span", { class: "ag-vink", role: "img", "aria-label": "Vink" });
   el.innerHTML = vinkSVG("head");
   return el;
@@ -328,6 +328,7 @@ export function welcome(): HTMLElement {
         h("li", { class: "ag-user", style: "--delay:0.15s" }, h("span", { class: "ag-mark", "aria-hidden": "true" }, ">"), "who is Navin?"),
         toolStep("Query", "SELECT * FROM navin", "Querying…", 0.9, facts),
         toolStep("Read", "projects --featured", "Reading…", 1.7, work),
+        // Vink closes the session by offering the short version.
         h(
           "li",
           { class: "ag-step ag-reply", style: "--delay:2.15s" },
@@ -335,23 +336,7 @@ export function welcome(): HTMLElement {
           h(
             "div",
             {},
-            h("p", {}, "Want Navin's 30-second summary, to reach him, or to ask me more?"),
-            h(
-              "div",
-              { class: "hero-hurry" },
-              cmd("tldr", h("span", {}, h("em", { class: "cta-tag" }, "TL;DR"), "Read the 30-second summary"), "cta cta-main"),
-              link(`mailto:${links.email}?subject=Hi%20Navin`, h("span", {}, icon("mail", 15), "Email"), "cta"),
-              link(links.linkedin, h("span", {}, icon("linkedin", 15), "LinkedIn"), "cta"),
-            ),
-            // Follow-ups the agent answers well; each reads like a user turn you can send.
-            h(
-              "div",
-              { class: "ag-suggest", "aria-label": "Suggested questions" },
-              h("span", { class: "ag-suggest-label" }, "try asking"),
-              ...["What is TernoDBI?", "What's his tech stack?", "How do I reach him?"].map((q) =>
-                h("button", { type: "button", class: "ag-ask", "data-run": q }, h("span", { "aria-hidden": "true" }, ">"), q),
-              ),
-            ),
+            h("p", {}, "That's Navin at a glance. ", h("span", { class: "ag-offer" }, "Want the 30-second summary?")),
           ),
         ),
       ),
