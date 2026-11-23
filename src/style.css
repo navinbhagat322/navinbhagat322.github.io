@@ -771,7 +771,8 @@ code {
 /* featured work, one line each */
 .ag-work {
   display: grid;
-  gap: 6px;
+  /* same rhythm as the facts table: 2px + 2px cell padding */
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -881,7 +882,7 @@ code {
 
 .hq-table th {
   width: 120px;
-  padding: 4px 16px 4px 0;
+  padding: 2px 16px 2px 0;
   background: none;
   border: 0;
   color: var(--muted);
@@ -892,7 +893,7 @@ code {
 }
 
 .hq-table td {
-  padding: 4px 0;
+  padding: 2px 0;
   color: var(--fg);
   font: 14.5px/1.55 var(--mono);
 }
@@ -3844,11 +3845,11 @@ body.plain-mode #app {
   }
 
   .hq-table :is(th, td) {
-    padding-block: 3px;
+    padding-block: 1px;
   }
 
   .ag-work {
-    gap: 3px;
+    gap: 2px;
   }
 
   .ag-result {
