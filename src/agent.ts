@@ -192,14 +192,76 @@ export async function answerReply(line: string, ctx: Ctx) {
   reply(list, ["No worries. Ask me anything else about Navin whenever you like."]);
 }
 
+// Greetings and small talk get a friendly answer, not an error.
+const SMALL_TALK: { match: RegExp; say: Child[]; offer?: [string, string] }[] = [
+  {
+    match: /^(hi+|hey+|hello+|hiya|yo|hola|namaste|howdy|sup|gm|good (morning|afternoon|evening))\b/i,
+    say: ["Hi! I'm Vink, Navin's assistant. Ask me about his projects, work, skills, or how to reach him."],
+    offer: ["Want the 30‑second summary to start?", "tldr"],
+  },
+  {
+    match: /^(how are (you|u)|how'?s it going|what'?s up|wassup)\b/i,
+    say: ["Doing well, thanks for asking! I'm here to tell you about Navin."],
+    offer: ["Want the 30‑second summary?", "tldr"],
+  },
+  {
+    match: /^(thanks?|thank (you|u)|thx|ty|cool|nice|great|awesome|perfect)\b/i,
+    say: ["Glad that helped. Ask me anything else about Navin whenever you like."],
+  },
+  {
+    match: /^(bye|goodbye|see (ya|you)|cya|later)\b/i,
+    say: ["Bye, thanks for stopping by!"],
+    offer: ["Want Navin's links before you go?", "contact"],
+  },
+];
+
+const smallTalk = (input: string) => SMALL_TALK.find((t) => t.match.test(input.trim()));
+
+/** A known command one or two typos away from a single-word input, like "projetcs". */
+function closestCommand(input: string, shell: Shell): string | undefined {
+  const word = input.trim().toLowerCase();
+  if (!/^[a-z-]{3,}$/.test(word)) return;
+  let best: { name: string; d: number } | undefined;
+  for (const c of shell.list()) {
+    const d = distance(word, c.name);
+    if (d <= (c.name.length > 5 ? 2 : 1) && d < (best?.d ?? 9)) best = { name: c.name, d };
+  }
+  return best?.name;
+}
+
+function distance(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0]++;
+    for (let j = 1; j <= b.length; j++) {
+      const cur = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+  }
+  return row[b.length];
+}
+
 export async function ask(question: string, ctx: Ctx) {
   const list = ctx.add(h("ol", { class: "agent agent-answer", "aria-label": "Vink's answer" }));
   const hit = pick(question);
 
   if (!hit) {
+    const talk = smallTalk(question);
+    if (talk) {
+      reply(list, talk.say, talk.offer?.[0]);
+      setOffer(talk.offer?.[1] ?? null, ctx.shell);
+      return;
+    }
+    const near = closestCommand(question, ctx.shell);
+    if (near) {
+      reply(list, [h("code", {}, question.trim()), " isn't a command here. Did you mean ", h("code", {}, near), "?"], "Want me to run it?");
+      setOffer(near, ctx.shell);
+      return;
+    }
     reply(
       list,
-      ["I didn't quite catch that. I know about Navin's projects, experience, skills, education and how to reach him."],
+      ["I'm not sure about that one. I can tell you about Navin's projects, work, skills, education and how to reach him."],
       "Want the 30‑second summary to start?",
     );
     setOffer("tldr", ctx.shell);
@@ -225,7 +287,7 @@ export async function ask(question: string, ctx: Ctx) {
 }
 
 /** Does Vink recognise the topic, even in a short phrase like "his skills"? */
-export const canAnswer = (input: string) => !!pick(input);
+export const canAnswer = (input: string) => !!pick(input) || !!smallTalk(input);
 
 /** Does unknown input read like a question rather than a mistyped command? */
 export function looksLikeQuestion(input: string): boolean {

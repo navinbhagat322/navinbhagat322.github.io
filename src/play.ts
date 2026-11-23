@@ -276,8 +276,8 @@ export function setupPlay(shell: Shell, windowEl: HTMLElement, statusSlot: HTMLE
     game.unlock("hello");
 
     if (!known && !question) {
+      // He already answered in the session; just shrug.
       vink.setPose("shrug", 1800);
-      void vink.say(["Hmm, I don't know that one. ", cmd("help"), " has the list — or just ask me something."], 4500);
       game.unlock("oops");
       return;
     }

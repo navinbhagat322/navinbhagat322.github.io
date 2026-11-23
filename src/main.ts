@@ -5,7 +5,7 @@ import "./style.css";
 
 import { fillPlaceholders, loadActivity } from "./activity";
 import { analyticsEnabled, startAnalytics, totalVisits, trackCommand } from "./analytics";
-import { answerReply, ask, canAnswer, isReply, looksLikeQuestion, setOffer } from "./agent";
+import { answerReply, ask, isReply, looksLikeQuestion, setOffer } from "./agent";
 import { commands } from "./commands";
 import { links, profile } from "./content";
 import { NeuralBackground } from "./neural";
@@ -41,13 +41,8 @@ async function startShell() {
   ];
   shell.fallback = async (ctx, line) => {
     if (isReply(line)) return answerReply(line, ctx);
-    if (looksLikeQuestion(line) || canAnswer(line)) return ask(line, ctx);
-    ctx.error(`command not found: ${line.split(/\s+/)[0]}`);
-    ctx.out(
-      h("span", { class: "muted" }, "type "),
-      h("button", { type: "button", class: "cmd-link", "data-run": "help" }, "help"),
-      h("span", { class: "muted" }, ", or ask a question in plain English."),
-    );
+    // Vink answers everything else: questions, small talk, and typos ("did you mean …?").
+    return ask(line, ctx);
   };
 
   let onPaletteOpen = () => {};
